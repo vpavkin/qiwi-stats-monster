@@ -1,0 +1,132 @@
+/*
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Darkroom theme by Juan Sanchez. Based on instructions from Adobe and
+//	inspired by Adobe Lightroom. For more themes check out http://www.scalenine.com
+//
+///////////////////////////////////////////////////////////////////////////////
+*/
+
+@namespace s "library://ns.adobe.com/flex/spark";
+@namespace mx "library://ns.adobe.com/flex/mx";
+
+
+@font-face {
+    src: url(fonts/MyriadPro-Regular.otf);
+    fontFamily: "Myriad Pro";
+    fontStyle: normal;
+    fontWeight: normal;
+}
+
+@font-face {
+    src: url(fonts/MyriadPro-Bold.otf);
+    fontFamily: "Myriad Pro Bold";
+    fontStyle: normal;
+    fontWeight: normal;
+}
+
+@font-face {
+    src: url(fonts/MyriadPro-Regular.otf);
+    fontFamily: "Myriad Pro MX";
+    fontStyle: normal;
+    fontWeight: normal;
+    embedAsCFF: false;
+}
+
+@font-face {
+    src: url(fonts/MyriadPro-Bold.otf);
+    fontFamily: "Myriad Pro Bold MX";
+    fontStyle: normal;
+    fontWeight: normal;
+    embedAsCFF: false;
+}
+
+/*
+//------------------------------
+//  Global
+//------------------------------
+*/
+
+global {
+    fontFamily: "Myriad Pro";
+    fontWeight: normal;
+    fontSize: 12px;
+    color: #ffffff;
+    rollOverColor: #ff9900;
+    textRollOverColor: #ff9900;
+}
+
+
+/*
+//------------------------------
+//  mx:Alert
+//------------------------------
+*/
+
+mx|Alert{
+    fontFamily: "Myriad Pro MX";
+    fontWeight: normal;
+    fontSize: 12px;
+    backgroundColor: #000000;
+    dropShadowVisible: true;
+    chromeColor: #574bff;
+    titleStyleName: alertTitle;
+    messageStyleName: alertMessage;
+    buttonStyleName: alertButton;
+}
+
+.alertMessage {
+    fontFamily: "Myriad Pro MX";
+    color: #ffffff;
+}
+
+.alertTitle{
+    fontFamily: "Myriad Pro";
+    fontSize: 12px;
+    fontWeight: bold;
+    color: #ffffff;
+}
+
+.alertButton{
+    fontFamily: "Myriad Pro MX";
+}
+
+/*
+//------------------------------
+//  Buttons
+//------------------------------
+*/
+s|Button {
+    skinClass: ClassReference('com.qiwi.marketing.presentation.skins.ButtonSkin');
+    color: #ffffff;
+    fontSize: 12px;
+    fontWeight: bold;
+}
+
+/*
+//------------------------------
+//  DataGrid
+//------------------------------
+*/
+s|DataGrid {
+    contentBackgroundColor: #000000;
+    selectionColor: #574bff;
+    fontSize: 12px;
+}
+
+s|GridItemRenderer {
+    color: #ffffff; /* defines the header text color */
+    chromeColor: #ff9900; /* defines the header background color */
+    fontWeight: normal;
+}
+
+/*
+//------------------------------
+//  Panel
+//------------------------------
+*/
+s|Panel {
+
+    backgroundColor: #000000;
+    cornerRadius: 0;
+}

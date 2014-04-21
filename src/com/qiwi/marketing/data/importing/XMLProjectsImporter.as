@@ -72,6 +72,7 @@ public class XMLProjectsImporter {
 		for each (var item:XML in list) {
 			result.addItem(new ProjectField(item.@id, item.@name));
 		}
+        return result;
 	}
 
 	private static function parseEntry(xml:XML, tagName:String):ArrayCollection {

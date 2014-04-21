@@ -3,69 +3,68 @@
   Created by v.pavkin on 18.04.2014.
 -->
 <s:Panel title="Projects Board"
-		 height="100%" width="100%" xmlns:s="library://ns.adobe.com/flex/spark"
-		 xmlns:fx="http://ns.adobe.com/mxml/2009">
+         height="100%" width="100%" xmlns:s="library://ns.adobe.com/flex/spark"
+         xmlns:fx="http://ns.adobe.com/mxml/2009"
+        skinClass="com.qiwi.marketing.presentation.skins.BigPanelSkin">
 
-	<fx:Script><![CDATA[
-		import com.qiwi.marketing.data.importing.XMLProjectsImporter;
-		import com.qiwi.marketing.data.storage.LocalStorage;
-		import com.qiwi.marketing.project.Project;
+    <fx:Script><![CDATA[
+        import com.qiwi.marketing.data.importing.XMLProjectsImporter;
+        import com.qiwi.marketing.data.storage.LocalStorage;
+        import com.qiwi.marketing.project.Project;
 
-		import mx.events.CloseEvent;
+        import mx.controls.Alert;
+        import mx.events.CloseEvent;
 
-		import spark.components.Alert;
+        [Bindable]
+        private var _localStorage:LocalStorage = LocalStorage.instance
 
-		[Bindable]
-		private var _localStorage:LocalStorage = LocalStorage.instance
+        private function onImportProjectClick(event:MouseEvent):void {
+            var _file:File = new File();
+            _file.browseForOpen("Import a project (XML)", [new FileFilter("XML Project desc", "*.xml")])
+            _file.addEventListener(Event.SELECT, onImportedProjectSelected)
+        }
 
-		private function onImportProjectClick(event:MouseEvent):void {
-			var _file:File = new File();
-			_file.browseForOpen("Import a project (XML)", [new FileFilter("XML Project desc", "*.xml")])
-			_file.addEventListener(Event.SELECT, onImportedProjectSelected)
-		}
+        private function onImportedProjectSelected(event:Event):void {
+            XMLProjectsImporter.importToLocalStorage(File(event.target))
+        }
 
-		private function onImportedProjectSelected(event:Event):void {
-			XMLProjectsImporter.importToLocalStorage(File(event.target))
-		}
+        private function onOpenProjectClick(event:MouseEvent):void {
+            if (projectsList.selectedItem) {
+                Context.currentProject = Project(projectsList.selectedItem);
+                dispatchEvent(new Event("open_project", true))
+            }
+        }
 
-		private function onOpenProjectClick(event:MouseEvent):void {
-			if (projectsList.selectedItem) {
-				Context.currentProject = Project(projectsList.selectedItem);
-				dispatchEvent(new Event("open_project", true))
-			}
-		}
+        private function onDeleteProjectClick(event:MouseEvent):void {
+            if (projectsList.selectedItem) {
+                var p:Project = Project(projectsList.selectedItem);
+                var a:Alert = Alert.show(("Delete Project \"" + p.displayName + "\"?"), "Are You Sure?", Alert.YES | Alert.NO);
+                a.addEventListener(CloseEvent.CLOSE, onDeletAlertClosed)
+            }
+        }
 
-		private function onDeleteProjectClick(event:MouseEvent):void {
-			if (projectsList.selectedItem) {
-				var p:Project = Project(projectsList.selectedItem);
-				var a:Alert = Alert.show("Delete Project '" + p.displayName + "'?", "Are You Sure?", Alert.YES | Alert.NO);
-				a.addEventListener(CloseEvent.CLOSE, onDeletAlertClosed)
-			}
-		}
+        private function onDeletAlertClosed(event:CloseEvent):void {
+            if (event.detail == Alert.YES)
+                _localStorage.removeProject(Project(projectsList.selectedItem));
+        }
+        ]]></fx:Script>
 
-		private function onDeletAlertClosed(event:CloseEvent):void {
-			if (event.detail == Alert.YES)
-				_localStorage.removeProject(Project(projectsList.selectedItem));
-		}
-		]]></fx:Script>
-
-	<s:layout>
-		<s:HorizontalLayout gap="20"/>
-	</s:layout>
-	<s:DataGrid id="projectsList" dataProvider="{_localStorage.projectsList}"
-				width="250" height="100%">
-		<s:columns>
-			<s:ArrayList>
-				<s:GridColumn dataField="displayName" headerText="Name" sortable="true"/>
-				<s:GridColumn dataField="number" headerText="Number"/>
-			</s:ArrayList>
-		</s:columns>
-	</s:DataGrid>
-	<s:VGroup gap="15" paddingTop="15">
-		<s:Button id="importProject" click="onImportProjectClick(event)" label="Load New Project"/>
-		<s:Button id="openProject" click="onOpenProjectClick(event)" label="Open Project"
-				  enabled="{(projectsList.selectionLength>0)}"/>
-		<s:Button id="deleteProject" color="red" click="onDeleteProjectClick(event)" label="Delete Project"
-				  enabled="{(projectsList.selectionLength>0)}"/>
-	</s:VGroup>
+    <s:HGroup gap="20">
+        <s:DataGrid id="projectsList" dataProvider="{_localStorage.projectsList}"
+                    width="250" height="100%">
+            <s:columns>
+                <s:ArrayList>
+                    <s:GridColumn dataField="displayName" headerText="Name" sortable="true"/>
+                    <s:GridColumn dataField="number" headerText="Number"/>
+                </s:ArrayList>
+            </s:columns>
+        </s:DataGrid>
+        <s:VGroup gap="15" paddingTop="15">
+            <s:Button id="importProject" click="onImportProjectClick(event)" label="Load New Project"/>
+            <s:Button id="openProject" click="onOpenProjectClick(event)" label="Open Project"
+                      enabled="{(projectsList.selectionLength>0)}"/>
+            <s:Button id="deleteProject" color="0x8a0002" click="onDeleteProjectClick(event)" label="Delete Project"
+                      enabled="{(projectsList.selectionLength>0)}"/>
+        </s:VGroup>
+    </s:HGroup>
 </s:Panel>

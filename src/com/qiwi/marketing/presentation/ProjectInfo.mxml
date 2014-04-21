@@ -2,64 +2,65 @@
 <!--
   Created by v.pavkin on 18.04.2014.
 -->
-<s:Panel title="Project Info"
-		 height="100%" width="100%" xmlns:s="library://ns.adobe.com/flex/spark"
-		 xmlns:fx="http://ns.adobe.com/mxml/2009"
-		 addedToStage="onAddedToStage()" xmlns:mx="library://ns.adobe.com/flex/mx">
+<s:Panel xmlns:s="library://ns.adobe.com/flex/spark"
+         xmlns:fx="http://ns.adobe.com/mxml/2009"
+         xmlns:mx="library://ns.adobe.com/flex/mx"
+         addedToStage="onAddedToStage()"
+         title="Project Info"
+         height="100%" width="100%"
+         skinClass="com.qiwi.marketing.presentation.skins.BigPanelSkin">
 
-	<fx:Script><![CDATA[
-		import com.qiwi.marketing.data.importing.CSVVisitsImporter;
-		import com.qiwi.marketing.data.storage.LocalStorage;
-		import com.qiwi.marketing.project.Project;
+    <fx:Script><![CDATA[
+        import com.qiwi.marketing.data.importing.CSVVisitsImporter;
+        import com.qiwi.marketing.data.storage.LocalStorage;
+        import com.qiwi.marketing.project.Project;
 
-		[Bindable]
-		private var _localStorage:LocalStorage = LocalStorage.instance;
+        [Bindable]
+        private var _localStorage:LocalStorage = LocalStorage.instance;
 
-		[Bindable]
-		private var _project:Project;
+        [Bindable]
+        private var _project:Project;
 
-		private function onAddedToStage():void {
-			title = "Project Info: '" + Context.currentProject.displayName + "'";
-			_project = Context.currentProject
-		}
+        private function onAddedToStage():void {
+            title = "Project Info: '" + Context.currentProject.displayName + "'";
+            _project = Context.currentProject
+        }
 
-		private function onImportVisitsClick():void {
-			var file:File = new File();
-			file.browseForOpen("Load CSV Transactions", [new FileFilter("CSV-file", "*.csv")])
-			file.addEventListener(Event.COMPLETE, onCSVFileSelected)
-		}
+        private function onImportVisitsClick():void {
+            var file:File = new File();
+            file.browseForOpen("Load CSV Transactions", [new FileFilter("CSV-file", "*.csv")])
+            file.addEventListener(Event.COMPLETE, onCSVFileSelected)
+        }
 
-		private function onCSVFileSelected(event:Event):void {
-			CSVVisitsImporter.importToLocalStorage(File(event.target));
-		}
-		]]></fx:Script>
+        private function onCSVFileSelected(event:Event):void {
+            CSVVisitsImporter.importToLocalStorage(File(event.target));
+        }
+        ]]></fx:Script>
 
-	<s:layout>
-		<s:HorizontalLayout gap="20"/>
-	</s:layout>
-	<s:VGroup gap="10" paddingTop="15" width="40%">
-		<!--<s:Label text="Pages:" fontWeight="bold"/>-->
-		<!--<s:DataGroup dataProvider="{_project.pages}" width="100%" >-->
-		<!--<s:layout>-->
-		<!--<s:VerticalLayout gap="5"/>-->
-		<!--</s:layout>-->
-		<!--<s:itemRenderer>-->
-		<!--<fx:Component>-->
-		<!--<s:ItemRenderer>-->
-		<!--<s:HGroup gap="5">-->
-		<!--<s:Label text="{data.id}"/>-->
-		<!--<s:Label text="{data.name}"/>-->
-		<!--</s:HGroup>-->
-		<!--</s:ItemRenderer>-->
-		<!--</fx:Component>-->
-		<!--</s:itemRenderer>-->
-		<!--</s:DataGroup>-->
-		<s:Label text="Statistics available for:" fontWeight="bold"/>
-		<mx:DateChooser/>
-	</s:VGroup>
-	<s:VGroup gap="15" paddingTop="15">
-		<s:Button id="importVisits" click="onImportVisitsClick()" label="Load New Data"/>
-		<s:Button id="openProject" label="Open Project"/>
-		<s:Button id="deleteProject" color="red" label="Delete Project"/>
-	</s:VGroup>
+    <s:HGroup gap="20">
+        <s:VGroup gap="10" paddingTop="15" width="40%">
+            <!--<s:Label text="Pages:" fontWeight="bold"/>-->
+            <!--<s:DataGroup dataProvider="{_project.pages}" width="100%" >-->
+            <!--<s:layout>-->
+            <!--<s:VerticalLayout gap="5"/>-->
+            <!--</s:layout>-->
+            <!--<s:itemRenderer>-->
+            <!--<fx:Component>-->
+            <!--<s:ItemRenderer>-->
+            <!--<s:HGroup gap="5">-->
+            <!--<s:Label text="{data.id}"/>-->
+            <!--<s:Label text="{data.name}"/>-->
+            <!--</s:HGroup>-->
+            <!--</s:ItemRenderer>-->
+            <!--</fx:Component>-->
+            <!--</s:itemRenderer>-->
+            <!--</s:DataGroup>-->
+            <s:Label text="Statistics available for:" fontWeight="bold"/>
+        </s:VGroup>
+        <s:VGroup gap="15" paddingTop="15">
+            <s:Button id="importVisits" click="onImportVisitsClick()" label="Load New Data"/>
+            <s:Button id="openProject" label="Open Project"/>
+            <s:Button id="deleteProject" color="red" label="Delete Project"/>
+        </s:VGroup>
+    </s:HGroup>
 </s:Panel>
