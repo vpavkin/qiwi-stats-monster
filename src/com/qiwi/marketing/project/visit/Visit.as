@@ -11,8 +11,9 @@ import mx.collections.ArrayCollection;
 
 public class Visit {
 
-	public var txnId:int;
+	public var txnId:String;
 	public var txnDate:Date;
+	public var txnDateStr:String;
 	public var trmId:int;
 	public var project:Project;
 	[Bindable]
@@ -20,12 +21,13 @@ public class Visit {
 	[Bindable]
 	public var path:Path;
 	[Bindable]
-	public var fields:ArrayCollection; //of VisitField
+	public var fields:ArrayCollection;	//of VisitField
 
 
-	public function Visit(txnId:int, txnDate:Date, trmId:int, project:Project, version:ProjectVersion, path:Path, fields:ArrayCollection) {
+	public function Visit(txnId:String, txnDate:String, trmId:int, project:Project, version:ProjectVersion, path:Path, fields:ArrayCollection) {
 		this.txnId = txnId;
-		this.txnDate = txnDate;
+		this.txnDate = dateFromCSVFormat(txnDate);
+		this.txnDateStr = txnDate;
 		this.trmId = trmId;
 		this.project = project;
 		this.version = version;
@@ -35,5 +37,19 @@ public class Visit {
 		if (path)
 			path.visit = this;
 	}
+
+	/**
+	 *
+	 * @param str date in string format like 2014-04-06 00:00:29
+	 * @return Date object
+	 */
+	public static function dateFromCSVFormat(str:String):Date {
+		var dt:Array = str.split(" ");
+		var ymd:Array = dt[0].split("-");
+		var hms:Array = dt[1].split(":");
+
+		return new Date(ymd[0], Number(ymd[1]) - 1, ymd[2], hms[0], hms[1], hms[2]);
+	}
+
 }
 }

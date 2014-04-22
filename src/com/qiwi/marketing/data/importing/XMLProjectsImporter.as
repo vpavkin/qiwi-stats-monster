@@ -55,7 +55,7 @@ public class XMLProjectsImporter {
 	}
 
 	public static function parseXMLProject(xml:XML):Project {
-		var res:Project = new Project(int(xml.@id), xml.@project, xml.@name);
+		var res:Project = new Project(int(xml.@id), xml.@project, xml.@name, xml.@versionRegExp);
 		res.pages = parseEntry(xml, TAGS.PAGE);
 		res.errors = parseEntry(xml, TAGS.ERROR);
 		res.services = parseEntry(xml, TAGS.SERVICE);
@@ -72,7 +72,7 @@ public class XMLProjectsImporter {
 		for each (var item:XML in list) {
 			result.addItem(new ProjectField(item.@id, item.@name));
 		}
-        return result;
+		return result;
 	}
 
 	private static function parseEntry(xml:XML, tagName:String):ArrayCollection {

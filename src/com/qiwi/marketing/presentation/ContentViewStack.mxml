@@ -5,13 +5,6 @@
 <mx:ViewStack xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:mx="library://ns.adobe.com/flex/mx"
 			  xmlns:s="library://ns.adobe.com/flex/spark" xmlns:presentation="com.qiwi.marketing.presentation.*"
 			  creationComplete="init()">
-	<fx:Declarations>
-
-		<s:Move id="fadeOut" duration="150" xFrom="0" xTo="{-this.width}"/>
-
-		<s:Fade id="fadeIn" duration="150" alphaFrom="0" alphaTo="1"/>
-	</fx:Declarations>
-
 	<fx:Script>
 		<![CDATA[
 		private function init():void {
@@ -19,22 +12,21 @@
 			projectsBoard.addEventListener("open_project", function (e:Event):void {
 				selectedChild = projectInfo;
 			})
+			projectInfo.addEventListener("open_board", function (e:Event):void {
+				selectedChild = projectsBoard;
+			})
 		}
 		]]>
 	</fx:Script>
 
 	<s:NavigatorContent id="projectsBoard"
 						width="100%"
-						height="100%"
-						showEffect="{this.fadeIn}"
-						hideEffect="{this.fadeOut}">
+						height="100%">
 		<presentation:ProjectsBoard width="100%" height="100%"/>
 	</s:NavigatorContent>
 	<s:NavigatorContent id="projectInfo"
 						width="100%"
-						height="100%"
-						showEffect="{this.fadeIn}"
-						hideEffect="{this.fadeOut}">
+						height="100%">
 		<presentation:ProjectInfo width="100%" height="100%"/>
 	</s:NavigatorContent>
 </mx:ViewStack>

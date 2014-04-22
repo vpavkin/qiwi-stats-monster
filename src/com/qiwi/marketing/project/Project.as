@@ -14,6 +14,7 @@ public class Project {
 	public var number:int;
 	public var name:String;
 	public var displayName:String;
+	public var versionRegExp:String;
 
 	public var versions:ArrayCollection; //of Version
 	public var pages:ArrayCollection; //of Page
@@ -24,22 +25,19 @@ public class Project {
 	public var otherEntries:ArrayCollection; //of CustomEntry
 
 	public var fields:ArrayCollection; // of ProjectField
-	public var visits:ArrayCollection; // of DayOfVisits
+	public var visits:Object;// ["DD-MM-YYYY"]=DayOfVisits
+
+	private var _versionRegExpInstance:RegExp;
 
 
-	public function Project(number:int = 0, name:String = null, displayName:String = null) {
+	public function Project(number:int = 0, name:String = null, displayName:String = null, versionRegExp:String = null) {
 		this.number = number;
 		this.name = name;
 		this.displayName = displayName;
-
+		this.versionRegExp = versionRegExp ? versionRegExp : "(.*)";
+		this._versionRegExpInstance = new RegExp(this.versionRegExp);
 		versions = new ArrayCollection();
-//		visits = new ArrayCollection([
-//			new Visit(123123, new Date(2014, 3, 17), 11111, this, null, null, null),
-//			new Visit(123123, new Date(2014, 3, 16), 11111, this, null, null, null),
-//			new Visit(123123, new Date(2014, 3, 16), 11111, this, null, null, null),
-//			new Visit(123123, new Date(2014, 3, 15), 11111, this, null, null, null)
-//		]);
-        visits = new ArrayCollection();
+		visits = {};
 	}
 
 	public function resolveEntry(entryStr:String):IProjectEntry {
@@ -51,6 +49,16 @@ public class Project {
 			}
 		}
 		return new CustomEntry(entryStr, "Unknown", "Unknown");
+	}
+	public function resolveVersion(version:String):ProjectVersion {
+		var processedVersion:String = version.replace(_versionRegExpInstance, "$1");
+		for each (var pv:ProjectVersion in versions) {
+			if (pv.value == processedVersion)
+				return pv;
+		}
+		var res:ProjectVersion = new ProjectVersion(processedVersion);
+		versions.addItem(res);
+		return res;
 	}
 }
 }

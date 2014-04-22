@@ -17,7 +17,7 @@ public class StorageSerializer {
 
 	public static function serializeProjects(ac:ArrayCollection):ArrayCollection {
 		return new ArrayCollection(ac.source.map(function (projectItem:Object, index:int, array:Array):Project {
-			var p:Project = new Project(projectItem.number, projectItem.name, projectItem.displayName);
+			var p:Project = new Project(projectItem.number, projectItem.name, projectItem.displayName, projectItem.versionRegExp);
 			serializeEntries(p, projectItem);
 			return p;
 		}));

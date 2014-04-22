@@ -8,16 +8,21 @@ import mx.collections.ArrayCollection;
 
 public class DayOfVisits {
 
-    public var date:Date;
-    public var project:Project;
-    public var visits:ArrayCollection;
-    public var isLoaded:Boolean = false;
+	public var date:Date;
+	public var project:Project;
+	public var visits:ArrayCollection;
+	public var isLoaded:Boolean = false;
 
 
-    public function DayOfVisits(project:Project, date:Date, visits:ArrayCollection = null) {
-        this.project = project;
-        this.date = date;
-        this.visits = visits ? visits : new ArrayCollection();
-    }
+	public function DayOfVisits(project:Project, date:Date, visits:ArrayCollection = null) {
+		this.project = project;
+		this.date = date;
+		this.visits = visits ? visits : new ArrayCollection();
+	}
+
+	public function addVisit(v:Visit):void {
+		this.isLoaded = true;
+		this.visits.addItem(v);
+	}
 }
 }

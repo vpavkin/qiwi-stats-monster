@@ -10,52 +10,52 @@ import mx.collections.ArrayCollection;
 
 public class ProjectsStorageManager {
 
-    private static var _instance:ProjectsStorageManager;
+	private static var _instance:ProjectsStorageManager;
 
-    public static function get instance():ProjectsStorageManager {
-        if (!_instance)
-            _instance = new ProjectsStorageManager();
-        return _instance;
-    }
+	public static function get instance():ProjectsStorageManager {
+		if (!_instance)
+			_instance = new ProjectsStorageManager();
+		return _instance;
+	}
 
-    private var _dataDirectory:File;
-    private var _projectsListFile:File;
+	private var _dataDirectory:File;
+	private var _projectsListFile:File;
 
 
-    public function ProjectsStorageManager() {
-        _dataDirectory = File.documentsDirectory.resolvePath("Marketing" + "/data");
-        if (!_dataDirectory.exists)
-            _dataDirectory.createDirectory();
+	public function ProjectsStorageManager() {
+		_dataDirectory = File.documentsDirectory.resolvePath("Marketing" + "/data");
+		if (!_dataDirectory.exists)
+			_dataDirectory.createDirectory();
 
-        _projectsListFile = _dataDirectory.resolvePath("list.mgd");
-    }
+		_projectsListFile = _dataDirectory.resolvePath("list.mgd");
+	}
 
-    public function loadProjectsList():ArrayCollection {
-        if (!_projectsListFile.exists)
-            return initProjectsList();
+	public function loadProjectsList():ArrayCollection {
+		if (!_projectsListFile.exists)
+			return initProjectsList();
 
-        var fileStream:FileStream = new FileStream();
-        fileStream.open(_projectsListFile, FileMode.READ);
-        var res:ArrayCollection = StorageSerializer.serializeProjects(fileStream.readObject());
-        fileStream.close();
-        return res;
-    }
+		var fileStream:FileStream = new FileStream();
+		fileStream.open(_projectsListFile, FileMode.READ);
+		var res:ArrayCollection = StorageSerializer.serializeProjects(fileStream.readObject());
+		fileStream.close();
+		return res;
+	}
 
-    private function initProjectsList():ArrayCollection {
-        var projectsList:ArrayCollection = new ArrayCollection([]);
-        saveProjectsList(projectsList);
-        return projectsList;
-    }
+	private function initProjectsList():ArrayCollection {
+		var projectsList:ArrayCollection = new ArrayCollection([]);
+		saveProjectsList(projectsList);
+		return projectsList;
+	}
 
-    private function saveProjectsList(projectsList:ArrayCollection):void {
-        var fileStream:FileStream = new FileStream();
-        fileStream.open(_projectsListFile, FileMode.WRITE);
-        fileStream.writeObject(projectsList);
-        fileStream.close();
-    }
+	private function saveProjectsList(projectsList:ArrayCollection):void {
+		var fileStream:FileStream = new FileStream();
+		fileStream.open(_projectsListFile, FileMode.WRITE);
+		fileStream.writeObject(projectsList);
+		fileStream.close();
+	}
 
-    public function updateProjectsList(projectsList:ArrayCollection):void {
-        saveProjectsList(projectsList);
-    }
+	public function updateProjectsList(projectsList:ArrayCollection):void {
+		saveProjectsList(projectsList);
+	}
 }
 }

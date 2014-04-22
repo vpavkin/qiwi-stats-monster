@@ -3,64 +3,82 @@
   Created by v.pavkin on 18.04.2014.
 -->
 <s:Panel xmlns:s="library://ns.adobe.com/flex/spark"
-         xmlns:fx="http://ns.adobe.com/mxml/2009"
-         xmlns:mx="library://ns.adobe.com/flex/mx"
-         addedToStage="onAddedToStage()"
-         title="Project Info"
-         height="100%" width="100%"
-         skinClass="com.qiwi.marketing.presentation.skins.BigPanelSkin">
+		 xmlns:fx="http://ns.adobe.com/mxml/2009"
+		 creationComplete="onCreationComplete()"
+		 title="Project Info"
+		 height="100%" width="100%"
+		 skinClass="com.qiwi.marketing.presentation.skins.BigPanelSkin">
 
-    <fx:Script><![CDATA[
-        import com.qiwi.marketing.data.importing.CSVVisitsImporter;
-        import com.qiwi.marketing.data.storage.LocalStorage;
-        import com.qiwi.marketing.project.Project;
+	<fx:Script><![CDATA[
+		import com.qiwi.marketing.data.importing.CSVVisitsImporter;
+		import com.qiwi.marketing.data.storage.LocalStorage;
+		import com.qiwi.marketing.project.Project;
 
-        [Bindable]
-        private var _localStorage:LocalStorage = LocalStorage.instance;
+		import mx.containers.ViewStack;
+		import mx.events.FlexEvent;
 
-        [Bindable]
-        private var _project:Project;
+		[Bindable]
+		private var _localStorage:LocalStorage = LocalStorage.instance;
 
-        private function onAddedToStage():void {
-            title = "Project Info: '" + Context.currentProject.displayName + "'";
-            _project = Context.currentProject
-        }
+		[Bindable]
+		private var _project:Project;
 
-        private function onImportVisitsClick():void {
-            var file:File = new File();
-            file.browseForOpen("Load CSV Transactions", [new FileFilter("CSV-file", "*.csv")])
-            file.addEventListener(Event.COMPLETE, onCSVFileSelected)
-        }
+		[Bindable]
+		private var vsView:DisplayObject;
 
-        private function onCSVFileSelected(event:Event):void {
-            CSVVisitsImporter.importToLocalStorage(File(event.target));
-        }
-        ]]></fx:Script>
+		public function onCreationComplete():void {
 
-    <s:HGroup gap="20">
-        <s:VGroup gap="10" paddingTop="15" width="40%">
-            <!--<s:Label text="Pages:" fontWeight="bold"/>-->
-            <!--<s:DataGroup dataProvider="{_project.pages}" width="100%" >-->
-            <!--<s:layout>-->
-            <!--<s:VerticalLayout gap="5"/>-->
-            <!--</s:layout>-->
-            <!--<s:itemRenderer>-->
-            <!--<fx:Component>-->
-            <!--<s:ItemRenderer>-->
-            <!--<s:HGroup gap="5">-->
-            <!--<s:Label text="{data.id}"/>-->
-            <!--<s:Label text="{data.name}"/>-->
-            <!--</s:HGroup>-->
-            <!--</s:ItemRenderer>-->
-            <!--</fx:Component>-->
-            <!--</s:itemRenderer>-->
-            <!--</s:DataGroup>-->
-            <s:Label text="Statistics available for:" fontWeight="bold"/>
-        </s:VGroup>
-        <s:VGroup gap="15" paddingTop="15">
-            <s:Button id="importVisits" click="onImportVisitsClick()" label="Load New Data"/>
-            <s:Button id="openProject" label="Open Project"/>
-            <s:Button id="deleteProject" color="red" label="Delete Project"/>
-        </s:VGroup>
-    </s:HGroup>
+			var obj:DisplayObject = this;
+			while (obj.parent != obj) {
+				if (obj.parent is ViewStack) {
+					vsView = obj;
+					break;
+				}
+				obj = obj.parent;
+			}
+
+			if (vsView) {
+				vsView.addEventListener(FlexEvent.SHOW, update, false, 0, true);
+			}
+
+			update();
+		}
+
+		private function update(e:Event = null):void {
+			title = "Project Info: '" + Context.currentProject.displayName + "'";
+			_project = Context.currentProject
+			var dts:String = "";
+			for (var d:String in _project.visits) {
+				dts += d + "\n";
+			}
+			datesAvailable.text = dts;
+			trace("INFO INIT HANDLER")
+		}
+
+
+		private function onImportVisitsClick():void {
+			var file:File = new File();
+			file.browseForOpen("Load CSV Transactions", [new FileFilter("CSV-file", "*.csv")])
+			file.addEventListener(Event.SELECT, onCSVFileSelected)
+		}
+
+		private function onCSVFileSelected(event:Event):void {
+			CSVVisitsImporter.importToLocalStorage(File(event.target));
+		}
+
+		private function onBackButtonClick():void {
+			dispatchEvent(new Event("open_board", true));
+		}
+		]]></fx:Script>
+
+	<s:HGroup gap="20">
+		<s:VGroup gap="10" paddingTop="15" width="40%">
+			<s:Label text="Statistics available for:" fontWeight="bold"/>
+			<s:Label id="datesAvailable"/>
+			<s:Button label="Back to board" click="onBackButtonClick()"/>
+		</s:VGroup>
+		<s:VGroup gap="15" paddingTop="15">
+			<s:Button id="importVisits" click="onImportVisitsClick()" label="Load New Data"/>
+		</s:VGroup>
+	</s:HGroup>
 </s:Panel>
