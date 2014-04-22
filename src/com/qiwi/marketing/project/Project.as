@@ -3,7 +3,8 @@
  * @author v.pavkin
  */
 package com.qiwi.marketing.project {
-import com.qiwi.marketing.project.visit.Visit;
+import com.qiwi.marketing.project.entry.CustomEntry;
+import com.qiwi.marketing.project.entry.IProjectEntry;
 
 import mx.collections.ArrayCollection;
 
@@ -41,6 +42,15 @@ public class Project {
         visits = new ArrayCollection();
 	}
 
-
+	public function resolveEntry(entryStr:String):IProjectEntry {
+		var entries:Array = [pages, errors, services, dataEntries, exits, otherEntries];
+		for each (var ac:ArrayCollection in entries) {
+			for each (var entry:IProjectEntry in ac) {
+				if (entry.id == entryStr)
+					return entry;
+			}
+		}
+		return new CustomEntry(entryStr, "Unknown", "Unknown");
+	}
 }
 }

@@ -10,9 +10,9 @@ public class PathStep {
 
 	public var projectEntry:IProjectEntry;
 	public var data:String;
-	public var time:Date;
+	public var time:int;
 
-	public function PathStep(projectEntry:IProjectEntry, time:Date, data:String = null) {
+	public function PathStep(projectEntry:IProjectEntry, time:int, data:String = null) {
 		this.projectEntry = projectEntry;
 		this.time = time;
 		this.data = data;
