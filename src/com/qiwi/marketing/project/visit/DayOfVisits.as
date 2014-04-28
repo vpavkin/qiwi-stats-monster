@@ -10,19 +10,19 @@ public class DayOfVisits {
 
 	public var date:Date;
 	public var project:Project;
-	public var visits:ArrayCollection;
+	public var visits:Vector.<Visit>;
 	public var isLoaded:Boolean = false;
 
 
-	public function DayOfVisits(project:Project, date:Date, visits:ArrayCollection = null) {
+	public function DayOfVisits(project:Project, date:Date, visits:Vector.<Visit> = null) {
 		this.project = project;
 		this.date = date;
-		this.visits = visits ? visits : new ArrayCollection();
+		this.visits = visits ? visits : new Vector.<Visit>();
 	}
 
 	public function addVisit(v:Visit):void {
 		this.isLoaded = true;
-		this.visits.addItem(v);
+		this.visits.push(v);
 	}
 }
 }

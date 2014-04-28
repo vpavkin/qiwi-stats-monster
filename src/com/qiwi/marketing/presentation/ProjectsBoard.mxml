@@ -2,10 +2,11 @@
 <!--
   Created by v.pavkin on 18.04.2014.
 -->
-<s:Panel title="Projects Board"
-		 height="100%" width="100%" xmlns:s="library://ns.adobe.com/flex/spark"
-		 xmlns:fx="http://ns.adobe.com/mxml/2009"
-		 skinClass="com.qiwi.marketing.presentation.skins.BigPanelSkin">
+<presentation:PageBase title="Projects Board"
+					   xmlns:s="library://ns.adobe.com/flex/spark"
+					   xmlns:fx="http://ns.adobe.com/mxml/2009"
+					   xmlns:presentation="com.qiwi.marketing.presentation.*"
+					   width="100%" height="100%">
 
 	<fx:Script><![CDATA[
 		import com.qiwi.marketing.data.importing.XMLProjectsImporter;
@@ -38,6 +39,7 @@
 		private function onDeleteProjectClick(event:MouseEvent):void {
 			if (projectsList.selectedItem) {
 				var p:Project = Project(projectsList.selectedItem);
+				Alert.buttonHeight = 41;
 				var a:Alert = Alert.show(("Delete Project \"" + p.displayName + "\"?"), "Are You Sure?", Alert.YES | Alert.NO);
 				a.addEventListener(CloseEvent.CLOSE, onDeletAlertClosed)
 			}
@@ -49,9 +51,9 @@
 		}
 		]]></fx:Script>
 
-	<s:HGroup gap="20">
+	<s:HGroup gap="20" height="100%" width="100%" requestedColumnCount="2">
 		<s:DataGrid id="projectsList" dataProvider="{_localStorage.projectsList}"
-					width="250" height="100%">
+					width="50%" height="100%">
 			<s:columns>
 				<s:ArrayList>
 					<s:GridColumn dataField="displayName" headerText="Name" sortable="true"/>
@@ -59,12 +61,13 @@
 				</s:ArrayList>
 			</s:columns>
 		</s:DataGrid>
-		<s:VGroup gap="15" paddingTop="15">
-			<s:Button id="importProject" click="onImportProjectClick(event)" label="Load New Project"/>
-			<s:Button id="openProject" click="onOpenProjectClick(event)" label="Open Project"
+		<s:VGroup gap="15" width="50%" paddingTop="15">
+			<s:Button id="importProject" click="onImportProjectClick(event)" label="Load New Project" height="70"/>
+			<s:Button id="openProject" click="onOpenProjectClick(event)" label="Open Project" height="70"
 					  enabled="{(projectsList.selectionLength>0)}"/>
 			<s:Button id="deleteProject" color="0x8a0002" click="onDeleteProjectClick(event)" label="Delete Project"
+					  height="70"
 					  enabled="{(projectsList.selectionLength>0)}"/>
 		</s:VGroup>
 	</s:HGroup>
-</s:Panel>
+</presentation:PageBase>

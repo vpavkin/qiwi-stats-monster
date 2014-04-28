@@ -1,8 +1,30 @@
 <?xml version="1.0"?>
 <s:WindowedApplication xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:s="library://ns.adobe.com/flex/spark"
-					   xmlns:presentation="com.qiwi.marketing.presentation.*">
+					   xmlns:presentation="com.qiwi.marketing.presentation.*" xmlns:debugger="com.demonsters.debugger.*"
+					   showStatusBar="false">
 
 	<fx:Style source="style/styles.css"/>
+
+	<fx:Script>
+	        <![CDATA[
+		import mx.controls.Alert;
+		import mx.logging.ILogger;
+		import mx.logging.Log;
+
+		private function onCreationComplete():void {
+
+			// Monster Debugger trace message
+			monsterDebugger.trace(this, "Hello World!");
+
+			// Flex trace message
+			var logger:ILogger = Log.getLogger("Main.mxml");
+			logger.error("Hello World!");
+
+		}
+		]]>
+	    </fx:Script>
+	<debugger:MonsterDebuggerFlex id="monsterDebugger"/>
+
 
 	<presentation:ContentViewStack width="100%" height="100%"/>
 </s:WindowedApplication>

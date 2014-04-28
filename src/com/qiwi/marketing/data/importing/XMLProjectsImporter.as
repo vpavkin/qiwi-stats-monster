@@ -12,6 +12,7 @@ import com.qiwi.marketing.project.entry.ErrorEntry;
 import com.qiwi.marketing.project.entry.ExitEntry;
 import com.qiwi.marketing.project.entry.IProjectEntry;
 import com.qiwi.marketing.project.entry.PageEntry;
+import com.qiwi.marketing.project.entry.PageEntry;
 import com.qiwi.marketing.project.entry.ServiceEntry;
 
 import flash.filesystem.File;
@@ -56,34 +57,34 @@ public class XMLProjectsImporter {
 
 	public static function parseXMLProject(xml:XML):Project {
 		var res:Project = new Project(int(xml.@id), xml.@project, xml.@name, xml.@versionRegExp);
-		res.pages = parseEntry(xml, TAGS.PAGE);
-		res.errors = parseEntry(xml, TAGS.ERROR);
-		res.services = parseEntry(xml, TAGS.SERVICE);
-		res.exits = parseEntry(xml, TAGS.EXIT);
-		res.dataEntries = parseEntry(xml, TAGS.DATA);
-		res.otherEntries = parseEntry(xml, TAGS.OTHER);
-		res.fields = parseFields(xml);
+		res.pages = Vector.<PageEntry>(parseEntry(xml, TAGS.PAGE));
+		res.errors = Vector.<ErrorEntry>(parseEntry(xml, TAGS.ERROR));
+		res.services = Vector.<ServiceEntry>(parseEntry(xml, TAGS.SERVICE));
+		res.exits = Vector.<ExitEntry>(parseEntry(xml, TAGS.EXIT));
+		res.dataEntries = Vector.<DataEntry>(parseEntry(xml, TAGS.DATA));
+		res.otherEntries = Vector.<CustomEntry>(parseEntry(xml, TAGS.OTHER));
+		res.fields = Vector.<ProjectField>(parseFields(xml));
 		return res;
 	}
 
-	private static function parseFields(xml:XML):ArrayCollection {
-		var result:ArrayCollection = new ArrayCollection();
+	private static function parseFields(xml:XML):Array {
+		var result:Array = [];
 		var list:XMLList = xml.fields.field;
 		for each (var item:XML in list) {
-			result.addItem(new ProjectField(item.@id, item.@name));
+			result.push(new ProjectField(item.@id, item.@name));
 		}
 		return result;
 	}
 
-	private static function parseEntry(xml:XML, tagName:String):ArrayCollection {
-		var result:ArrayCollection = new ArrayCollection();
+	private static function parseEntry(xml:XML, tagName:String):Array {
+		var result:Array = [];
 
 		var tags:XMLList = xml[tagName];
 		if (!tags && !tags.length())
 			return result;
 
 		for each (var item:XML in tags) {
-			result.addItem(createEntry(item, tagName))
+			result.push(createEntry(item, tagName))
 		}
 		return result;
 	}

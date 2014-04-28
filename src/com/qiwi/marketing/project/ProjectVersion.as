@@ -4,7 +4,7 @@
  */
 package com.qiwi.marketing.project {
 
-[Bindable]
+
 public class ProjectVersion {
 
 	public var value:String;

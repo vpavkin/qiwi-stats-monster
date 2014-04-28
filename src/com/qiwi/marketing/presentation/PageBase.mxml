@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<!--
+  Created by v.pavkin on 18.04.2014.
+-->
+<s:Panel xmlns:s="library://ns.adobe.com/flex/spark"
+		 xmlns:fx="http://ns.adobe.com/mxml/2009"
+		 creationComplete="onCreationComplete()"
+		 height="100%" width="100%"
+		 skinClass="com.qiwi.marketing.presentation.skins.BigPanelSkin"
+		 controlBarVisible="false">
+
+	<fx:Script><![CDATA[
+		import mx.containers.ViewStack;
+		import mx.events.FlexEvent;
+
+		private var vsView:DisplayObject;
+
+		public function onCreationComplete():void {
+
+			var obj:DisplayObject = this;
+			while (obj.parent != obj) {
+				if (obj.parent is ViewStack) {
+					vsView = obj;
+					break;
+				}
+				obj = obj.parent;
+			}
+
+			if (vsView) {
+				vsView.addEventListener(FlexEvent.SHOW, onShow, false, 0, true);
+			}
+
+			onShow();
+		}
+
+		protected function onShow(e:Event = null):void {
+			//is overriden
+		}
+		]]></fx:Script>
+</s:Panel>

@@ -5,7 +5,7 @@
 package com.qiwi.marketing.project.visit {
 import com.qiwi.marketing.project.ProjectField;
 
-[Bindable]
+
 public dynamic class VisitField {
 
 	public var field:ProjectField;

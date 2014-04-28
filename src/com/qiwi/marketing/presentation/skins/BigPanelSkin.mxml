@@ -19,7 +19,7 @@
 		<s:Rect width="100%" height="45"
 				top="0">
 			<s:fill>
-				<s:SolidColor color="#574bff"/>
+				<s:SolidColor color="0x2266bb"/>
 			</s:fill>
 		</s:Rect>
 
@@ -50,7 +50,7 @@
 			 fontSize="18"
 			 fontWeight="bold"/>
 
-	<s:Group id="contentGroup">
+	<s:Group id="contentGroup" height="100%" width="100%">
 		<s:layout>
 			<s:VerticalLayout paddingTop="55" paddingBottom="10" paddingLeft="15" paddingRight="15"
 							  paddingBottom.disabledWithControlBar="55" paddingTop.disabledWithControlBar="55"

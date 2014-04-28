@@ -15,21 +15,19 @@ public class Visit {
 	public var txnDate:Date;
 	public var txnDateStr:String;
 	public var trmId:int;
-	public var project:Project;
-	[Bindable]
+
 	public var version:ProjectVersion;
-	[Bindable]
+
 	public var path:Path;
-	[Bindable]
-	public var fields:ArrayCollection;	//of VisitField
+
+	public var fields:Vector.<VisitField>;	//of VisitField
 
 
-	public function Visit(txnId:String, txnDate:String, trmId:int, project:Project, version:ProjectVersion, path:Path, fields:ArrayCollection) {
+	public function Visit(txnId:String, txnDate:String, trmId:int, version:ProjectVersion, path:Path, fields:Vector.<VisitField>) {
 		this.txnId = txnId;
 		this.txnDate = dateFromCSVFormat(txnDate);
 		this.txnDateStr = txnDate;
 		this.trmId = trmId;
-		this.project = project;
 		this.version = version;
 		this.path = path;
 		this.fields = fields;

@@ -2,59 +2,23 @@
 <!--
   Created by v.pavkin on 18.04.2014.
 -->
-<s:Panel xmlns:s="library://ns.adobe.com/flex/spark"
-		 xmlns:fx="http://ns.adobe.com/mxml/2009"
-		 creationComplete="onCreationComplete()"
-		 title="Project Info"
-		 height="100%" width="100%"
-		 skinClass="com.qiwi.marketing.presentation.skins.BigPanelSkin">
+<presentation:PageBase xmlns:s="library://ns.adobe.com/flex/spark"
+					   xmlns:fx="http://ns.adobe.com/mxml/2009"
+					   xmlns:presentation="com.qiwi.marketing.presentation.*">
 
 	<fx:Script><![CDATA[
 		import com.qiwi.marketing.data.importing.CSVVisitsImporter;
-		import com.qiwi.marketing.data.storage.LocalStorage;
 		import com.qiwi.marketing.project.Project;
-
-		import mx.containers.ViewStack;
-		import mx.events.FlexEvent;
-
-		[Bindable]
-		private var _localStorage:LocalStorage = LocalStorage.instance;
 
 		[Bindable]
 		private var _project:Project;
 
-		[Bindable]
-		private var vsView:DisplayObject;
-
-		public function onCreationComplete():void {
-
-			var obj:DisplayObject = this;
-			while (obj.parent != obj) {
-				if (obj.parent is ViewStack) {
-					vsView = obj;
-					break;
-				}
-				obj = obj.parent;
-			}
-
-			if (vsView) {
-				vsView.addEventListener(FlexEvent.SHOW, update, false, 0, true);
-			}
-
-			update();
-		}
-
-		private function update(e:Event = null):void {
-			title = "Project Info: '" + Context.currentProject.displayName + "'";
+		override protected function onShow(e:Event = null):void {
+			title = "Project Info: «" + Context.currentProject.displayName + "»";
 			_project = Context.currentProject
-			var dts:String = "";
-			for (var d:String in _project.visits) {
-				dts += d + "\n";
-			}
-			datesAvailable.text = dts;
+			overview.dataProvider = _project.visitsOverview;
 			trace("INFO INIT HANDLER")
 		}
-
 
 		private function onImportVisitsClick():void {
 			var file:File = new File();
@@ -64,21 +28,36 @@
 
 		private function onCSVFileSelected(event:Event):void {
 			CSVVisitsImporter.importToLocalStorage(File(event.target));
+			overview.dataProvider = _project.visitsOverview;
 		}
 
 		private function onBackButtonClick():void {
 			dispatchEvent(new Event("open_board", true));
 		}
+
+		private function onShowSimpleVisitsClick():void {
+			dispatchEvent(new Event("open_simple_visits_viewer", true));
+		}
 		]]></fx:Script>
 
-	<s:HGroup gap="20">
-		<s:VGroup gap="10" paddingTop="15" width="40%">
-			<s:Label text="Statistics available for:" fontWeight="bold"/>
-			<s:Label id="datesAvailable"/>
-			<s:Button label="Back to board" click="onBackButtonClick()"/>
+	<s:HGroup gap="20" width="100%" height="100%" requestedColumnCount="2">
+		<s:VGroup gap="10" paddingTop="15" width="50%" height="100%" requestedRowCount="2">
+			<s:DataGrid id="overview" dataProvider="{_project.visitsOverview}"
+						width="100%" height="100%">
+				<s:columns>
+					<s:ArrayList>
+						<s:GridColumn dataField="date" headerText="Date" sortable="true"/>
+						<s:GridColumn dataField="visits" headerText="Visits" sortable="true"/>
+						<s:GridColumn dataField="pays" headerText="Pays" sortable="true"/>
+						<s:GridColumn dataField="conversion" headerText="Conversion" sortable="true"/>
+					</s:ArrayList>
+				</s:columns>
+			</s:DataGrid>
+			<s:Button label="Back to board" click="onBackButtonClick()" height="50"/>
 		</s:VGroup>
-		<s:VGroup gap="15" paddingTop="15">
-			<s:Button id="importVisits" click="onImportVisitsClick()" label="Load New Data"/>
+		<s:VGroup gap="15" paddingTop="15" width="50%">
+			<s:Button id="importVisits" click="onImportVisitsClick()" label="Load New Data" height="50"/>
+			<s:Button id="showSimpleVisits" click="onShowSimpleVisitsClick()" label="Simple Visits Viewer" height="50"/>
 		</s:VGroup>
 	</s:HGroup>
-</s:Panel>
+</presentation:PageBase>

@@ -4,7 +4,7 @@
  */
 package com.qiwi.marketing.project {
 
-[Bindable]
+
 public class ProjectField {
 
 	public function ProjectField(key:String, displayName:String) {

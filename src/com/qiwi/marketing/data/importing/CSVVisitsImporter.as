@@ -14,7 +14,6 @@ import flash.filesystem.File;
 import flash.filesystem.FileMode;
 import flash.filesystem.FileStream;
 
-import mx.collections.ArrayCollection;
 import mx.controls.Alert;
 
 public class CSVVisitsImporter {
@@ -30,50 +29,59 @@ public class CSVVisitsImporter {
 
 	public static function importToLocalStorage(file:File):void {
 		if (!file.exists) {
-			Alert.show("There is no such file: '" + file.url + "'");
+			Alert.show("There is no such file: '" + file.url + "'", "Error");
 			return;
 		}
 
 		var fileStream:FileStream = new FileStream();
 		fileStream.open(file, FileMode.READ);
-		var text:String = fileStream.readMultiByte(fileStream.bytesAvailable, "windows-1251");
+		var text:String = fileStream.readUTFBytes(fileStream.bytesAvailable);
+		fileStream.close();
 
-		var visits:Array = [];
+		var lines:Vector.<String> = Vector.<String>(text.split("\n"));
 
-		var lines:Array = text.split("\n");
-		var fieldNames:Array = lines[0].split("\t");
-		for (var j:int = 1; j < lines.length; j++) {
-			var line:Array = lines[j].split("\t");
+		var visits:Vector.<Object> = new Vector.<Object>();
+		var fieldNames:Vector.<String> = Vector.<String>(lines[0].split("\t"));
+		var linesLength:uint = lines.length;
+		for (var j:int = 1; j < linesLength; j++) {
+			var line:Vector.<String> = Vector.<String>(lines[j].split("\t"));
+
+			//todo: optimize?
 			if (!(line.length == fieldNames.length)) {
 				if (line.length != 0 && (line.join("")))
-					Alert.show("Not matching length: " + line.join(","));
+					Alert.show("Not matching length: " + line.join(","), "Error");
 				continue;
 			}
+
 			var obj:Object = {};
-			fieldNames.every(function (item:String, index:int, array:Array):* {
-				obj[item] = line[index];
-				return true
-			});
+			for (var k:int = 0; k < fieldNames.length; k++) {
+				obj[fieldNames[k]] = line[k]
+			}
 			visits.push(obj);
 		}
-		var result:Array = visits.map(function (item:Object, index:int, array:Array):Visit {
-			var project:Project = LocalStorage.instance.resolveProject(int(item[COMMON_VARS.PROJECT_NUMBER]));
-			var visitFields:ArrayCollection = new ArrayCollection();
+		var project:Project = LocalStorage.instance.resolveProject(int(visits[0][COMMON_VARS.PROJECT_NUMBER]));
+		var result:Vector.<Visit> = Vector.<Visit>(visits.map(function (item:Object, index:int, array:Vector.<Object>):Visit {
+
+			var visitFields:Vector.<VisitField> = new Vector.<VisitField>();
 			for each (var pf:ProjectField in project.fields) {
-				visitFields.addItem(new VisitField(pf, item[pf.key]));
+				visitFields.push(new VisitField(pf, item[pf.key]));
 			}
-			return new Visit(
+
+			var v:Visit = new Visit(
 				item[COMMON_VARS.ID],
 				item[COMMON_VARS.DATE],
 				item[COMMON_VARS.TRM_ID],
-				project,
 				project.resolveVersion(item[COMMON_VARS.VERSION]),
 				new Path(item[COMMON_VARS.PATH], project),
 				visitFields
-			)
-		});
-		LocalStorage.instance.addVisits(result);
-		fileStream.close();
+			);
+			if (index % 100 == 0) {
+				trace(index + " -> " + item[COMMON_VARS.PATH]);
+			}
+			return v;
+
+		}));
+		LocalStorage.instance.addVisits(result,project);
 	}
 
 }

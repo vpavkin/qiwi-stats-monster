@@ -5,7 +5,6 @@
 package com.qiwi.marketing.project.visit.path {
 import com.qiwi.marketing.project.entry.IProjectEntry;
 
-[Bindable]
 public class PathStep {
 
 	public var projectEntry:IProjectEntry;

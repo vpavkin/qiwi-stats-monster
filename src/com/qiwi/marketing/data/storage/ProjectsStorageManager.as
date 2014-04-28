@@ -2,6 +2,9 @@
  * Created by Vladimir on 20.04.2014.
  */
 package com.qiwi.marketing.data.storage {
+import com.qiwi.marketing.project.Project;
+import com.qiwi.marketing.project.visit.Visit;
+
 import flash.filesystem.File;
 import flash.filesystem.FileMode;
 import flash.filesystem.FileStream;

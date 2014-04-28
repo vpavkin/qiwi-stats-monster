@@ -4,7 +4,6 @@
  */
 package com.qiwi.marketing.project.entry {
 
-[Bindable]
 public class EntryBase {
 
 	private var _name:String;

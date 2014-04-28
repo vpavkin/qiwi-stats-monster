@@ -4,6 +4,7 @@
 package com.qiwi.marketing.data.storage {
 import com.qiwi.marketing.project.Project;
 import com.qiwi.marketing.project.visit.DayOfVisits;
+import com.qiwi.marketing.project.visit.Visit;
 
 import flash.filesystem.File;
 import flash.filesystem.FileMode;
@@ -40,6 +41,20 @@ public class VisitsStorageManager {
 		}
 	}
 
+	public function loadVisits(project:Project, date:String):Vector.<Visit> {
+		var v:File = _dataDirectory.resolvePath(project.number.toString() + "/" + date + ".st");
+		if (!v.exists)
+			return new Vector.<Visit>();
+		var ba:ByteArray = new ByteArray();
+		var fileStream:FileStream = new FileStream();
+		fileStream.open(v, FileMode.READ);
+		fileStream.readBytes(ba);
+		fileStream.close();
+		ba.uncompress();
+		var dov:Vector.<Object> = ba.readObject();
+		return StorageSerializer.serializeVisits(dov, project);
+	}
+
 	public static function loadHeader(project:Project, file:File):DayOfVisits {
 		return new DayOfVisits(project, fileNameToDate(file.name))
 	}
@@ -66,7 +81,7 @@ public class VisitsStorageManager {
 
 	private function saveVisitsFile(file:File, dov:DayOfVisits):void {
 		var ba:ByteArray = new ByteArray();
-		ba.writeObject(dov);
+		ba.writeObject(dov.visits);
 		ba.compress();
 		var fileStream:FileStream = new FileStream();
 		fileStream.open(file, FileMode.WRITE);

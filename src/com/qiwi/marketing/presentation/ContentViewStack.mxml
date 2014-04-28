@@ -15,6 +15,12 @@
 			projectInfo.addEventListener("open_board", function (e:Event):void {
 				selectedChild = projectsBoard;
 			})
+			projectInfo.addEventListener("open_simple_visits_viewer", function (e:Event):void {
+				selectedChild = simpleVisitsViewer;
+			})
+			simpleVisitsViewer.addEventListener("open_project", function (e:Event):void {
+				selectedChild = projectInfo;
+			})
 		}
 		]]>
 	</fx:Script>
@@ -28,5 +34,10 @@
 						width="100%"
 						height="100%">
 		<presentation:ProjectInfo width="100%" height="100%"/>
+	</s:NavigatorContent>
+	<s:NavigatorContent id="simpleVisitsViewer"
+						width="100%"
+						height="100%">
+		<presentation:SimpleVisitsViewer width="100%" height="100%"/>
 	</s:NavigatorContent>
 </mx:ViewStack>

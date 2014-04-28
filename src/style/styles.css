@@ -1,5 +1,6 @@
 @namespace s "library://ns.adobe.com/flex/spark";
 @namespace mx "library://ns.adobe.com/flex/mx";
+@namespace presentation "com.qiwi.marketing.presentation.*";
 
 @font-face {
 	src: url(fonts/MyriadPro-Regular.otf);
@@ -30,12 +31,6 @@
 	fontWeight: bold;
 	embedAsCFF: false;
 }
-
-/*
-//------------------------------
-//  Global
-//------------------------------
-*/
 
 global {
 	fontFamily: "Myriad Pro";
@@ -46,16 +41,10 @@ global {
 	textRollOverColor: #ff9900;
 }
 
-/*
-//------------------------------
-//  mx:Alert
-//------------------------------
-*/
-
 mx|Alert {
 	fontFamily: "Myriad Pro MX";
 	fontWeight: normal;
-	fontSize: 12px;
+	fontSize: 24px;
 	backgroundColor: #000000;
 	dropShadowVisible: true;
 	chromeColor: #2266bb;
@@ -70,21 +59,17 @@ mx|Alert {
 }
 
 .alertTitle {
-	fontFamily: "Myriad Pro";
-	fontSize: 12px;
+	fontFamily: "Myriad Pro MX";
+	fontSize: 24px;
 	fontWeight: bold;
 	color: #ffffff;
 }
 
 .alertButton {
 	fontFamily: "Myriad Pro MX";
+	fontSize: 24px;
 }
 
-/*
-//------------------------------
-//  Buttons
-//------------------------------
-*/
 s|Button {
 	skinClass: ClassReference('com.qiwi.marketing.presentation.skins.ButtonSkin');
 	color: #ffffff;
@@ -92,11 +77,6 @@ s|Button {
 	fontWeight: bold;
 }
 
-/*
-//------------------------------
-//  DataGrid
-//------------------------------
-*/
 s|DataGrid {
 	contentBackgroundColor: #000000;
 	selectionColor: #2266bb;
@@ -105,17 +85,39 @@ s|DataGrid {
 
 s|GridItemRenderer {
 	color: #ffffff; /* defines the header text color */
-	chromeColor: #ff9900; /* defines the header background color */
+	chromeColor: #ff8100; /* defines the header background color */
 	fontWeight: normal;
 }
 
-/*
-//------------------------------
-//  Panel
-//------------------------------
-*/
 s|Panel {
-
 	backgroundColor: #000000;
 	cornerRadius: 0;
+}
+
+s|ComboBox {
+	contentBackgroundColor: #000000;
+	chromeColor: #ff9900;
+	borderColor: #ffffff;
+	focusColor: #ff9900;
+	selectionColor: #ff9900;
+}
+
+s|ComboBox s|TextInput {
+	focusedTextSelectionColor: #ff9900;
+	borderColor: #ffffff;
+}
+
+s|TextArea {
+	contentBackgroundColor: #000000;
+	borderColor: #ffffff;
+	focusColor: #ff9900;
+	focusedTextSelectionColor: #ff9900;
+}
+
+presentation|ProjectsBoard, presentation|ProjectsBoard s|*, presentation|ProjectsBoard mx|* {
+	fontSize: 30px;
+}
+
+presentation|ProjectInfo, presentation|ProjectInfo s|*, presentation|ProjectInfo mx|* {
+	fontSize: 20px;
 }
