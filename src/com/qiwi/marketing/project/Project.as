@@ -10,10 +10,11 @@ import com.qiwi.marketing.project.entry.ExitEntry;
 import com.qiwi.marketing.project.entry.IProjectEntry;
 import com.qiwi.marketing.project.entry.PageEntry;
 import com.qiwi.marketing.project.entry.ServiceEntry;
+import com.qiwi.marketing.project.scenarios.ProjectFlow;
+import com.qiwi.marketing.project.scenarios.ProjectScenario;
 import com.qiwi.marketing.project.visit.DayOfVisits;
 
 import mx.collections.ArrayCollection;
-import mx.collections.ArrayList;
 
 public class Project {
 
@@ -35,6 +36,8 @@ public class Project {
 	public var visits:Object; // ["DD-MM-YYYY"]=DayOfVisits
 	[Bindable]
 	public var flows:Vector.<ProjectFlow>;
+	[Bindable]
+	public var scenarios:Vector.<ProjectScenario>;
 
 	private var _versionRegExpInstance:RegExp;
 

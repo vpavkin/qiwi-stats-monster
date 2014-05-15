@@ -5,7 +5,7 @@
 package com.qiwi.marketing.data.storage {
 import com.qiwi.marketing.project.Project;
 import com.qiwi.marketing.project.ProjectField;
-import com.qiwi.marketing.project.ProjectFlow;
+import com.qiwi.marketing.project.scenarios.ProjectFlow;
 import com.qiwi.marketing.project.entry.CustomEntry;
 import com.qiwi.marketing.project.entry.DataEntry;
 import com.qiwi.marketing.project.entry.ErrorEntry;

@@ -49,6 +49,15 @@ public class Visit {
 		return null;
 	}
 
+	public function containsEntry(entry:String):Boolean {
+		var l:uint = path.steps.length;
+		for (var i:int = 0; i < l; i++) {
+			if (path.steps[i].entry == entry)
+				return true;
+		}
+		return false
+	}
+
 	/**
 	 *
 	 * @param str date in string format like 2014-04-06 00:00:29

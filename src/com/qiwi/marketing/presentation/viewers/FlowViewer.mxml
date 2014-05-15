@@ -10,12 +10,11 @@
 							 weight="8" caps="square"/>
 	</fx:Declarations>
 	<fx:Script><![CDATA[
-		import com.qiwi.marketing.data.storage.VisitsStorageManager;
-		import com.qiwi.marketing.project.ProjectFlow;
-		import com.qiwi.marketing.project.entry.DataEntry;
-		import com.qiwi.marketing.project.entry.IProjectEntry;
-		import com.qiwi.marketing.project.visit.DayOfVisits;
-		import com.qiwi.marketing.project.visit.path.Path;
+		import com.qiwi.marketing.project.ProjectVersion;
+		import com.qiwi.marketing.project.scenarios.FlowEntryData;
+		import com.qiwi.marketing.project.scenarios.ProjectFlow;
+		import com.qiwi.marketing.project.scenarios.ScenarioProcessor;
+		import com.qiwi.marketing.utils.VectorUtils;
 
 		import mx.charts.ChartItem;
 		import mx.charts.HitData;
@@ -24,24 +23,38 @@
 
 		private var _selectedDate:String;
 		private var _selectedFlow:ProjectFlow;
+		private var _selectedVersion:ProjectVersion;
 
 		[Bindable]
 		private var _dataProvider:ArrayCollection;
 		[Bindable]
 		private var _flows:ArrayCollection;
+		[Bindable]
+		private var _versions:ArrayCollection;
 
 		override protected function onShow(e:Event = null):void {
 			super.onShow(e);
 			reset()
-			_flows = new ArrayCollection()
-			for (var j:int = 0; j < _project.flows.length; j++) {
-				_flows.addItem(_project.flows[j]);
-			}
+			updateFlows();
+			updateVersions();
 		}
 		private function reset():void {
 			viewer.dataProvider = null;
-			dateComboBox.selectedIndex = -1;
-			flowComboBox.selectedIndex = -1;
+			_selectedDate = null;
+			_selectedFlow = null;
+			_selectedVersion = ProjectVersion.ALL_VERSIONS;
+			versionComboBox.selectedIndex = dateComboBox.selectedIndex = flowComboBox.selectedIndex = -1;
+		}
+
+		private function updateFlows():void {
+			_flows = VectorUtils.toArrayCollection(_project.flows)
+		}
+
+		private function updateVersions():void {
+			var v:ArrayCollection = VectorUtils.toArrayCollection(_project.versions)
+			v.addItemAt(ProjectVersion.ALL_VERSIONS, 0);
+			_versions = v;
+			versionComboBox.toolTip = _versions.length > 1 ? "" : "Не было загружено ни одного дня данных.\nВерсии для фильтрации появятся после первого загруженного дня.";
 		}
 
 		private function onSelectedDateChanged():void {
@@ -51,54 +64,6 @@
 			}
 		}
 
-		private function checkChange():void {
-			if (!dateComboBox.selectedItem || !flowComboBox.selectedItem)
-				return;
-
-			var dv:DayOfVisits = _project.visits[_selectedDate];
-			if (!dv.isLoaded) {
-				dv.setVisits(VisitsStorageManager.instance.loadVisits(_project, _selectedDate));
-				dv.isLoaded = true;
-			}
-			var gv:Array = [];
-			_selectedFlow.entries.forEach(function (item:String, index:int, array:*):* {
-					var realItem:String = item,
-						dataVal:String = null,
-						realEntryName:String;
-					if (item.indexOf("D:")) {//data item
-						var arr:Array = item.split(":");
-						realItem = arr[0];
-						dataVal = arr[1];
-					}
-					var entry:IProjectEntry = _project.resolveEntry(realItem);
-					realEntryName = entry.name + (((entry is DataEntry) && dataVal) ? ":\n" + DataEntry(entry).getInterpretation(dataVal) : "");
-					gv.push({entry: realItem, entryLabel: item, entryName: realEntryName, dataVal: dataVal, uniqueEnters: 0})
-				}
-			)
-			var vlen:uint = dv.visits.length;
-			for (var vI:int = 0; vI < vlen; vI++) {
-				var p:Path = dv.visits[vI].path;
-				var plen:uint = p.steps.length;
-				for (var eI:int = 0; eI < gv.length; eI++) {
-					var entry:Object = gv[eI]
-					for (var sI:int = 0; sI < plen; sI++) {
-						if (p.steps[sI].entry == entry.entry && (!entry.dataVal || entry.dataVal == p.steps[sI].data)) {
-							entry.uniqueEnters++;
-							break;
-						}
-					}
-				}
-			}
-			gv.unshift({
-				entryLabel: "Total", entryName: "Total Visits", uniqueEnters: vlen
-			})
-			_dataProvider = new ArrayCollection(gv);
-		}
-
-		private function tipFunction(hd:HitData):String {
-			return hd.item.entryName + "\n" + hd.item.uniqueEnters;
-		}
-
 		private function onSelectedFlowChanged():void {
 			if (flowComboBox.selectedItem && flowComboBox.selectedItem != _selectedFlow) {
 				_selectedFlow = flowComboBox.selectedItem;
@@ -106,11 +71,33 @@
 			}
 		}
 
+		private function onSelectedVersionChanged():void {
+			_selectedVersion = versionComboBox.selectedItem;
+			checkChange()
+		}
+
+		private function checkChange():void {
+			if (!dateComboBox.selectedItem || !flowComboBox.selectedItem)
+				return;
+
+			var flow:Vector.<FlowEntryData> = ScenarioProcessor.getFlowData(_project, _selectedDate, _selectedFlow, _selectedVersion)
+			_dataProvider = VectorUtils.toArrayCollection(flow);
+			updateVersions()
+		}
+
 		override protected function get displayName():String {
 			return "Flow Viewer";
 		}
-		private function labelFunc(element:ChartItem, series:Series):String {
-			return element.item.uniqueEnters + "\n" + ((element.item.uniqueEnters / viewer.dataProvider.getItemAt(0).uniqueEnters) * 100).toPrecision(3) + "%";
+
+		private function tipFunction(hd:HitData):String {
+			var series:ColumnSeries = ColumnSeries(hd.element);
+			return hd.item.entryName + "\n" + series.displayName + ":\n" + hd.item[series.yField];
+		}
+		private function entersLabelFunc(element:ChartItem, series:Series):String {
+			return  element.item.enters + "\n" + ((element.item.enters / viewer.dataProvider.getItemAt(0).enters) * 100).toPrecision(3) + "%";
+		}
+		private function paymentsLabelFunc(element:ChartItem, series:Series):String {
+			return element.item.payments + "\n" + ((element.item.payments / viewer.dataProvider.getItemAt(0).enters) * 100).toPrecision(3) + "%";
 		}
 		]]></fx:Script>
 
@@ -119,52 +106,73 @@
 			<s:Label text="Choose date:"/>
 			<s:ComboBox id="dateComboBox" dataProvider="{_project.datesAvailable}" requireSelection="false"
 						change="onSelectedDateChanged()"/>
-			<s:ComboBox id="flowComboBox" dataProvider="{_flows}" labelField="name" requireSelection="false"
+			<s:ComboBox id="flowComboBox" dataProvider="{_flows}" width="200" labelField="name" requireSelection="false"
 						change="onSelectedFlowChanged()"/>
+			<s:ComboBox id="versionComboBox" dataProvider="{_versions}" labelField="value"
+						requireSelection="true"
+						change="onSelectedVersionChanged()"/>
 		</s:HGroup>
 		<s:Label text="Gross shows:"/>
-		<mx:ColumnChart id="viewer"
-						height="100%"
-						width="100%"
-						showDataTips="true"
-						dataTipFunction="tipFunction"
-						dataProvider="{_dataProvider}"
-						styleName="customClass"
-			>
-			<mx:horizontalAxis>
-				<mx:CategoryAxis id="horAxis" categoryField="entryLabel"/>
-			</mx:horizontalAxis>
-			<mx:verticalAxis>
-				<mx:LinearAxis id="verAxis"/>
-			</mx:verticalAxis>
+		<s:Group height="100%"
+				 width="100%">
+			<mx:ColumnChart id="viewer"
+							height="100%"
+							width="100%"
+							showDataTips="true"
+							dataTipFunction="tipFunction"
+							dataProvider="{_dataProvider}"
+							styleName="customClass"
+				>
+				<mx:horizontalAxis>
+					<mx:CategoryAxis id="horAxis" categoryField="entryLabel"/>
+				</mx:horizontalAxis>
+				<mx:verticalAxis>
+					<mx:LinearAxis id="verAxis"/>
+				</mx:verticalAxis>
 
-			<mx:horizontalAxisRenderers>
-				<mx:AxisRenderer axis="{horAxis}">
-					<mx:axisStroke>{axisStroke}</mx:axisStroke>
-				</mx:AxisRenderer>
-			</mx:horizontalAxisRenderers>
-			<mx:verticalAxisRenderers>
-				<mx:AxisRenderer axis="{verAxis}">
-					<mx:axisStroke>{axisStroke}</mx:axisStroke>
-				</mx:AxisRenderer>
-			</mx:verticalAxisRenderers>
-			<mx:series>
-				<mx:ColumnSeries
-					labelPosition="outside"
-					xField="entryLabel"
-					labelFunction="labelFunc"
-					yField="uniqueEnters"
-					displayName="Unique Enters"
-					>
-					<mx:fill>
-						<mx:SolidColor color="#ff8100"/>
-					</mx:fill>
-					<mx:stroke>
-						<mx:SolidColorStroke color="#000000"/>
-					</mx:stroke>
-				</mx:ColumnSeries>
-			</mx:series>
-		</mx:ColumnChart>
-		<s:Button label="Back to «{_project.displayName}»" click="goToProjectInfo()"/>
+				<mx:horizontalAxisRenderers>
+					<mx:AxisRenderer axis="{horAxis}">
+						<mx:axisStroke>{axisStroke}</mx:axisStroke>
+					</mx:AxisRenderer>
+				</mx:horizontalAxisRenderers>
+				<mx:verticalAxisRenderers>
+					<mx:AxisRenderer axis="{verAxis}">
+						<mx:axisStroke>{axisStroke}</mx:axisStroke>
+					</mx:AxisRenderer>
+				</mx:verticalAxisRenderers>
+				<mx:series>
+					<mx:ColumnSeries
+						labelPosition="outside"
+						xField="entryLabel"
+						labelFunction="entersLabelFunc"
+						yField="enters"
+						displayName="Дошли"
+						>
+						<mx:fill>
+							<mx:SolidColor color="0x2266bb"/>
+						</mx:fill>
+						<mx:stroke>
+							<mx:SolidColorStroke color="#000000"/>
+						</mx:stroke>
+					</mx:ColumnSeries>
+					<mx:ColumnSeries
+						labelPosition="outside"
+						xField="entryLabel"
+						labelFunction="paymentsLabelFunc"
+						yField="payments"
+						displayName="Оплатили"
+						>
+						<mx:fill>
+							<mx:SolidColor color="#ff8100"/>
+						</mx:fill>
+						<mx:stroke>
+							<mx:SolidColorStroke color="#000000"/>
+						</mx:stroke>
+					</mx:ColumnSeries>
+				</mx:series>
+			</mx:ColumnChart>
+			<mx:Legend right="30" top="30" dataProvider="{viewer}" fontSize="24"/>
+		</s:Group>
+		<s:Button label="Назад на «{_project.displayName}»" click="goToProjectInfo()"/>
 	</s:VGroup>
 </presentation:PageBase>

@@ -2,7 +2,7 @@
  *
  * @author v.pavkin
  */
-package com.qiwi.marketing.project {
+package com.qiwi.marketing.project.scenarios {
 public class ProjectFlow {
 
 	public var name:String;

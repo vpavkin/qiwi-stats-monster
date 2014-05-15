@@ -71,15 +71,26 @@ public class LocalStorage {
 		return s.substr(8, 2) + s.substr(4, 3) + "-" + s.substr(0, 4);
 	}
 
+	public static function sameDate(dateKey:String, txnDate:String):Boolean {
+		return dateKey.charAt(0) == txnDate.charAt(8) &&
+			dateKey.charAt(1) == txnDate.charAt(9) &&
+			dateKey.charAt(3) == txnDate.charAt(5) &&
+			dateKey.charAt(4) == txnDate.charAt(6)
+	}
+
 	public function addVisits(visits:Vector.<Visit>, project:Project):void {
-		var ds:String = dateToStringKey(visits[0].txnDateStr);
-		var dv:DayOfVisits = project.visits[ds];
-		if (!dv)
-			dv = project.visits[ds] = new DayOfVisits(visits[0].txnDate);
-		for each (var v:Visit in visits) {
+		var ds:String = "";
+		var dv:DayOfVisits;
+		var vlen:uint = visits.length;
+		for (var i:int = 0; i < vlen; i++) {
+			var v:Visit = visits[i];
+			if (!sameDate(ds, v.txnDateStr)) {
+				ds = dateToStringKey(v.txnDateStr);
+				dv && dv.countGeneralStats();
+				dv = project.visits[ds] || (project.visits[ds] = new DayOfVisits(v.txnDate));
+			}
 			dv.addVisit(v);
 		}
-		dv.countGeneralStats();
 		VisitsStorageManager.instance.saveVisits(project);
 	}
 
