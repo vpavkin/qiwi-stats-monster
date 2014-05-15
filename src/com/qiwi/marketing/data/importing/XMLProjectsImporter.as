@@ -4,14 +4,15 @@
  */
 package com.qiwi.marketing.data.importing {
 import com.qiwi.marketing.data.storage.LocalStorage;
+import com.qiwi.marketing.data.storage.VisitsStorageManager;
 import com.qiwi.marketing.project.Project;
 import com.qiwi.marketing.project.ProjectField;
+import com.qiwi.marketing.project.ProjectFlow;
 import com.qiwi.marketing.project.entry.CustomEntry;
 import com.qiwi.marketing.project.entry.DataEntry;
 import com.qiwi.marketing.project.entry.ErrorEntry;
 import com.qiwi.marketing.project.entry.ExitEntry;
 import com.qiwi.marketing.project.entry.IProjectEntry;
-import com.qiwi.marketing.project.entry.PageEntry;
 import com.qiwi.marketing.project.entry.PageEntry;
 import com.qiwi.marketing.project.entry.ServiceEntry;
 
@@ -19,8 +20,8 @@ import flash.filesystem.File;
 import flash.filesystem.FileMode;
 import flash.filesystem.FileStream;
 
-import mx.collections.ArrayCollection;
 import mx.controls.Alert;
+import mx.events.CloseEvent;
 
 public class XMLProjectsImporter {
 
@@ -32,6 +33,8 @@ public class XMLProjectsImporter {
 		EXIT   : "exit",
 		OTHER  : "other"
 	};
+
+	private static var _pendingUpdate:Project;
 
 	public static function importToLocalStorage(file:File):void {
 		if (!file.exists) {
@@ -45,14 +48,26 @@ public class XMLProjectsImporter {
 		var text:String = fileStream.readUTFBytes(fileStream.bytesAvailable);
 		var xml:XML = new XML(text);
 		var project:Project = parseXMLProject(xml);
-
-		//todo:
-		//if(LocalStorage.instance.hasProject()){
-		//	request update confirmation
-		//}
-		LocalStorage.instance.addProject(project);
-
 		fileStream.close();
+		if (LocalStorage.instance.hasProject(project)) {
+			_pendingUpdate = project;
+			var a:Alert = Alert.show("You already have project with ID=" + project.number + ".\nDo you want to update it?", "Project is already in database.", Alert.YES | Alert.NO)
+			a.addEventListener(CloseEvent.CLOSE, onAlertClosed);
+			return;
+		}
+		LocalStorage.instance.addProject(project);
+		VisitsStorageManager.instance.loadProjectVisitsHeaders(project)
+	}
+
+	private static function onAlertClosed(event:CloseEvent):void {
+		if (event.detail == Alert.YES && _pendingUpdate) {
+			var old:Project = LocalStorage.instance.resolveProject(_pendingUpdate.number);
+			var v:Object = old.visits;
+			LocalStorage.instance.removeProject(old);
+			LocalStorage.instance.addProject(_pendingUpdate);
+			_pendingUpdate.visits = v;
+		}
+		_pendingUpdate = null
 	}
 
 	public static function parseXMLProject(xml:XML):Project {
@@ -64,7 +79,17 @@ public class XMLProjectsImporter {
 		res.dataEntries = Vector.<DataEntry>(parseEntry(xml, TAGS.DATA));
 		res.otherEntries = Vector.<CustomEntry>(parseEntry(xml, TAGS.OTHER));
 		res.fields = Vector.<ProjectField>(parseFields(xml));
+		res.flows = Vector.<ProjectFlow>(parseFlows(xml));
 		return res;
+	}
+
+	private static function parseFlows(xml:XML):Array {
+		var result:Array = [];
+		var list:XMLList = xml.flows.flow;
+		for each (var item:XML in list) {
+			result.push(new ProjectFlow(item.@name, item.@entries));
+		}
+		return result;
 	}
 
 	private static function parseFields(xml:XML):Array {

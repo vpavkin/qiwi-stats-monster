@@ -5,8 +5,6 @@
 package com.qiwi.marketing.data.storage {
 import com.qiwi.marketing.project.Project;
 import com.qiwi.marketing.project.visit.DayOfVisits;
-import com.qiwi.marketing.project.visit.DayOfVisits;
-import com.qiwi.marketing.project.visit.DayOfVisits;
 import com.qiwi.marketing.project.visit.Visit;
 
 import mx.collections.ArrayCollection;
@@ -74,12 +72,23 @@ public class LocalStorage {
 	}
 
 	public function addVisits(visits:Vector.<Visit>, project:Project):void {
+		var ds:String = dateToStringKey(visits[0].txnDateStr);
+		var dv:DayOfVisits = project.visits[ds];
+		if (!dv)
+			dv = project.visits[ds] = new DayOfVisits(visits[0].txnDate);
 		for each (var v:Visit in visits) {
-			var ds:String = dateToStringKey(v.txnDateStr);
-			var dv:DayOfVisits = (project.visits[ds] = project.visits[ds] ? project.visits[ds] : new DayOfVisits(project, v.txnDate));
 			dv.addVisit(v);
 		}
+		dv.countGeneralStats();
 		VisitsStorageManager.instance.saveVisits(project);
+	}
+
+	public function hasProject(project:Project):Boolean {
+		for each (var p:Project in _projectsList) {
+			if (p.number == project.number)
+				return true;
+		}
+		return false;
 	}
 }
 }

@@ -10,18 +10,19 @@
 
 	<fx:Script><![CDATA[
 		import com.qiwi.marketing.data.importing.XMLProjectsImporter;
-		import com.qiwi.marketing.data.storage.LocalStorage;
 		import com.qiwi.marketing.project.Project;
 
 		import mx.controls.Alert;
 		import mx.events.CloseEvent;
 
-		[Bindable]
-		private var _localStorage:LocalStorage = LocalStorage.instance
+		override public function onCreationComplete():void {
+			super.onCreationComplete();
+			Alert.buttonHeight = 41;
+		}
 
 		private function onImportProjectClick(event:MouseEvent):void {
 			var _file:File = new File();
-			_file.browseForOpen("Import a project (XML)", [new FileFilter("XML Project desc", "*.xml")])
+			_file.browseForOpen(resourceManager.getString("resources", "actions.import_project"), [new FileFilter(resourceManager.getString("resources", "actions.project_file_descriptor"), "*.xml")])
 			_file.addEventListener(Event.SELECT, onImportedProjectSelected)
 		}
 
@@ -32,15 +33,18 @@
 		private function onOpenProjectClick(event:MouseEvent):void {
 			if (projectsList.selectedItem) {
 				Context.currentProject = Project(projectsList.selectedItem);
-				dispatchEvent(new Event("open_project", true))
+				goToProjectInfo()
 			}
 		}
 
 		private function onDeleteProjectClick(event:MouseEvent):void {
 			if (projectsList.selectedItem) {
 				var p:Project = Project(projectsList.selectedItem);
-				Alert.buttonHeight = 41;
-				var a:Alert = Alert.show(("Delete Project \"" + p.displayName + "\"?"), "Are You Sure?", Alert.YES | Alert.NO);
+
+				var a:Alert = Alert.show(
+					resourceManager.getString("resources", "actions.delete_project", [p.displayName]),
+					resourceManager.getString("resources", "actions.are_you_sure"),
+						Alert.YES | Alert.NO);
 				a.addEventListener(CloseEvent.CLOSE, onDeletAlertClosed)
 			}
 		}
@@ -49,6 +53,10 @@
 			if (event.detail == Alert.YES)
 				_localStorage.removeProject(Project(projectsList.selectedItem));
 		}
+
+		override protected function get displayName():String {
+			return resourceManager.getString("resources", "projects_board.name")
+		}
 		]]></fx:Script>
 
 	<s:HGroup gap="20" height="100%" width="100%" requestedColumnCount="2">
@@ -56,16 +64,19 @@
 					width="50%" height="100%">
 			<s:columns>
 				<s:ArrayList>
-					<s:GridColumn dataField="displayName" headerText="Name" sortable="true"/>
-					<s:GridColumn dataField="number" headerText="Number"/>
+					<s:GridColumn dataField="displayName" headerText="{resourceManager.getString('resources', 'name')}" sortable="true"/>
+					<s:GridColumn dataField="number" headerText="{resourceManager.getString('resources', 'number')}"/>
 				</s:ArrayList>
 			</s:columns>
 		</s:DataGrid>
 		<s:VGroup gap="15" width="50%" paddingTop="15">
-			<s:Button id="importProject" click="onImportProjectClick(event)" label="Load New Project" height="70"/>
-			<s:Button id="openProject" click="onOpenProjectClick(event)" label="Open Project" height="70"
+			<s:Button id="openProject" click="onOpenProjectClick(event)"
+					  label='{resourceManager.getString("resources", "buttons.open_project")}' height="70"
 					  enabled="{(projectsList.selectionLength>0)}"/>
-			<s:Button id="deleteProject" color="0x8a0002" click="onDeleteProjectClick(event)" label="Delete Project"
+			<s:Button id="importProject" click="onImportProjectClick(event)"
+					  label='{resourceManager.getString("resources", "buttons.load_new_project")}' height="70"/>
+			<s:Button id="deleteProject" color="0x8a0002" click="onDeleteProjectClick(event)"
+					  label='{resourceManager.getString("resources", "buttons.delete_project")}'
 					  height="70"
 					  enabled="{(projectsList.selectionLength>0)}"/>
 		</s:VGroup>

@@ -1,0 +1,170 @@
+<?xml version="1.0"?>
+<!--
+  Created by v.pavkin on 18.04.2014.
+-->
+<presentation:PageBase xmlns:s="library://ns.adobe.com/flex/spark"
+					   xmlns:fx="http://ns.adobe.com/mxml/2009"
+					   xmlns:presentation="com.qiwi.marketing.presentation.*" xmlns:mx="library://ns.adobe.com/flex/mx">
+	<fx:Declarations>
+		<mx:SolidColorStroke id="axisStroke" color="#2266bb"
+							 weight="8" caps="square"/>
+	</fx:Declarations>
+	<fx:Script><![CDATA[
+		import com.qiwi.marketing.data.storage.VisitsStorageManager;
+		import com.qiwi.marketing.project.ProjectFlow;
+		import com.qiwi.marketing.project.entry.DataEntry;
+		import com.qiwi.marketing.project.entry.IProjectEntry;
+		import com.qiwi.marketing.project.visit.DayOfVisits;
+		import com.qiwi.marketing.project.visit.path.Path;
+
+		import mx.charts.ChartItem;
+		import mx.charts.HitData;
+		import mx.charts.chartClasses.Series;
+		import mx.collections.ArrayCollection;
+
+		private var _selectedDate:String;
+		private var _selectedFlow:ProjectFlow;
+
+		[Bindable]
+		private var _dataProvider:ArrayCollection;
+		[Bindable]
+		private var _flows:ArrayCollection;
+
+		override protected function onShow(e:Event = null):void {
+			super.onShow(e);
+			reset()
+			_flows = new ArrayCollection()
+			for (var j:int = 0; j < _project.flows.length; j++) {
+				_flows.addItem(_project.flows[j]);
+			}
+		}
+		private function reset():void {
+			viewer.dataProvider = null;
+			dateComboBox.selectedIndex = -1;
+			flowComboBox.selectedIndex = -1;
+		}
+
+		private function onSelectedDateChanged():void {
+			if (dateComboBox.selectedItem && dateComboBox.selectedItem != _selectedDate) {
+				_selectedDate = dateComboBox.selectedItem;
+				checkChange()
+			}
+		}
+
+		private function checkChange():void {
+			if (!dateComboBox.selectedItem || !flowComboBox.selectedItem)
+				return;
+
+			var dv:DayOfVisits = _project.visits[_selectedDate];
+			if (!dv.isLoaded) {
+				dv.setVisits(VisitsStorageManager.instance.loadVisits(_project, _selectedDate));
+				dv.isLoaded = true;
+			}
+			var gv:Array = [];
+			_selectedFlow.entries.forEach(function (item:String, index:int, array:*):* {
+					var realItem:String = item,
+						dataVal:String = null,
+						realEntryName:String;
+					if (item.indexOf("D:")) {//data item
+						var arr:Array = item.split(":");
+						realItem = arr[0];
+						dataVal = arr[1];
+					}
+					var entry:IProjectEntry = _project.resolveEntry(realItem);
+					realEntryName = entry.name + (((entry is DataEntry) && dataVal) ? ":\n" + DataEntry(entry).getInterpretation(dataVal) : "");
+					gv.push({entry: realItem, entryLabel: item, entryName: realEntryName, dataVal: dataVal, uniqueEnters: 0})
+				}
+			)
+			var vlen:uint = dv.visits.length;
+			for (var vI:int = 0; vI < vlen; vI++) {
+				var p:Path = dv.visits[vI].path;
+				var plen:uint = p.steps.length;
+				for (var eI:int = 0; eI < gv.length; eI++) {
+					var entry:Object = gv[eI]
+					for (var sI:int = 0; sI < plen; sI++) {
+						if (p.steps[sI].entry == entry.entry && (!entry.dataVal || entry.dataVal == p.steps[sI].data)) {
+							entry.uniqueEnters++;
+							break;
+						}
+					}
+				}
+			}
+			gv.unshift({
+				entryLabel: "Total", entryName: "Total Visits", uniqueEnters: vlen
+			})
+			_dataProvider = new ArrayCollection(gv);
+		}
+
+		private function tipFunction(hd:HitData):String {
+			return hd.item.entryName + "\n" + hd.item.uniqueEnters;
+		}
+
+		private function onSelectedFlowChanged():void {
+			if (flowComboBox.selectedItem && flowComboBox.selectedItem != _selectedFlow) {
+				_selectedFlow = flowComboBox.selectedItem;
+				checkChange()
+			}
+		}
+
+		override protected function get displayName():String {
+			return "Flow Viewer";
+		}
+		private function labelFunc(element:ChartItem, series:Series):String {
+			return element.item.uniqueEnters + "\n" + ((element.item.uniqueEnters / viewer.dataProvider.getItemAt(0).uniqueEnters) * 100).toPrecision(3) + "%";
+		}
+		]]></fx:Script>
+
+	<s:VGroup height="100%" width="100%">
+		<s:HGroup gap="20">
+			<s:Label text="Choose date:"/>
+			<s:ComboBox id="dateComboBox" dataProvider="{_project.datesAvailable}" requireSelection="false"
+						change="onSelectedDateChanged()"/>
+			<s:ComboBox id="flowComboBox" dataProvider="{_flows}" labelField="name" requireSelection="false"
+						change="onSelectedFlowChanged()"/>
+		</s:HGroup>
+		<s:Label text="Gross shows:"/>
+		<mx:ColumnChart id="viewer"
+						height="100%"
+						width="100%"
+						showDataTips="true"
+						dataTipFunction="tipFunction"
+						dataProvider="{_dataProvider}"
+						styleName="customClass"
+			>
+			<mx:horizontalAxis>
+				<mx:CategoryAxis id="horAxis" categoryField="entryLabel"/>
+			</mx:horizontalAxis>
+			<mx:verticalAxis>
+				<mx:LinearAxis id="verAxis"/>
+			</mx:verticalAxis>
+
+			<mx:horizontalAxisRenderers>
+				<mx:AxisRenderer axis="{horAxis}">
+					<mx:axisStroke>{axisStroke}</mx:axisStroke>
+				</mx:AxisRenderer>
+			</mx:horizontalAxisRenderers>
+			<mx:verticalAxisRenderers>
+				<mx:AxisRenderer axis="{verAxis}">
+					<mx:axisStroke>{axisStroke}</mx:axisStroke>
+				</mx:AxisRenderer>
+			</mx:verticalAxisRenderers>
+			<mx:series>
+				<mx:ColumnSeries
+					labelPosition="outside"
+					xField="entryLabel"
+					labelFunction="labelFunc"
+					yField="uniqueEnters"
+					displayName="Unique Enters"
+					>
+					<mx:fill>
+						<mx:SolidColor color="#ff8100"/>
+					</mx:fill>
+					<mx:stroke>
+						<mx:SolidColorStroke color="#000000"/>
+					</mx:stroke>
+				</mx:ColumnSeries>
+			</mx:series>
+		</mx:ColumnChart>
+		<s:Button label="Back to «{_project.displayName}»" click="goToProjectInfo()"/>
+	</s:VGroup>
+</presentation:PageBase>

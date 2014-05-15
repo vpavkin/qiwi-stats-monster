@@ -8,11 +8,12 @@ import com.qiwi.marketing.project.entry.IProjectEntry;
 public class PathStep {
 
 	public var projectEntry:IProjectEntry;
+	public var entry:String;
 	public var data:String;
 	public var time:int;
 
-	public function PathStep(projectEntry:IProjectEntry, time:int, data:String = null) {
-		this.projectEntry = projectEntry;
+	public function PathStep(entry:String, time:int, data:String = null) {
+		this.entry = entry;
 		this.time = time;
 		this.data = data;
 	}

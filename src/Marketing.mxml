@@ -5,20 +5,13 @@
 
 	<fx:Style source="style/styles.css"/>
 
+	<fx:Metadata>
+		[ResourceBundle("resources")]
+	</fx:Metadata>
+
 	<fx:Script>
 	        <![CDATA[
-		import mx.controls.Alert;
-		import mx.logging.ILogger;
-		import mx.logging.Log;
-
 		private function onCreationComplete():void {
-
-			// Monster Debugger trace message
-			monsterDebugger.trace(this, "Hello World!");
-
-			// Flex trace message
-			var logger:ILogger = Log.getLogger("Main.mxml");
-			logger.error("Hello World!");
 
 		}
 		]]>

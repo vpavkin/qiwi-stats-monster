@@ -1,0 +1,98 @@
+<?xml version="1.0"?>
+<!--
+  Created by v.pavkin on 18.04.2014.
+-->
+<presentation:PageBase xmlns:s="library://ns.adobe.com/flex/spark"
+					   xmlns:fx="http://ns.adobe.com/mxml/2009"
+					   xmlns:presentation="com.qiwi.marketing.presentation.*" xmlns:mx="library://ns.adobe.com/flex/mx">
+
+	<fx:Script><![CDATA[
+		import com.qiwi.marketing.data.storage.VisitsStorageManager;
+		import com.qiwi.marketing.project.entry.PageEntry;
+		import com.qiwi.marketing.project.visit.DayOfVisits;
+		import com.qiwi.marketing.project.visit.path.Path;
+
+		import mx.charts.HitData;
+		import mx.collections.ArrayCollection;
+
+		private var _selectedDate:String;
+
+		[Bindable]
+		private var _dataProvider:ArrayCollection;
+
+		private function onSelectedDateChanged():void {
+			if (dateComboBox.selectedItem && dateComboBox.selectedItem != _selectedDate) {
+				_selectedDate = dateComboBox.selectedItem;
+				var dv:DayOfVisits = _project.visits[_selectedDate];
+				if (!dv.isLoaded) {
+					dv.setVisits(VisitsStorageManager.instance.loadVisits(_project, _selectedDate));
+					dv.isLoaded = true;
+				}
+				var gv:Array = [];
+				_project.pages.forEach(function (item:PageEntry, index:int, array:*):* {
+					gv.push({entry: item.id, entryName: item.name, shows: 0})
+				})
+				var vlen:uint = dv.visits.length;
+				for (var j:int = 0; j < vlen; j++) {
+					var p:Path = dv.visits[j].path;
+
+					var plen:uint = p.steps.length;
+					for (var k:int = 0; k < plen; k++) {
+						for (var l:int = 0; l < gv.length; l++) {
+							if (p.steps[k].entry == gv[l].entry) {
+								gv[l].shows++;
+								break;
+							}
+						}
+					}
+				}
+				_dataProvider = new ArrayCollection(gv);
+			}
+		}
+
+		private function tipFunction(hd:HitData):String {
+			return hd.item.entryName + "\n" + hd.item.shows;
+		}
+		override protected function get displayName():String {
+			return "Gross Entries Viewer";
+		}
+		]]></fx:Script>
+
+	<s:VGroup height="100%" width="100%">
+		<s:HGroup gap="20">
+			<s:Label text="Choose date:"/>
+			<s:ComboBox id="dateComboBox" dataProvider="{_project.datesAvailable}" requireSelection="false"
+						change="onSelectedDateChanged()"/>
+		</s:HGroup>
+		<s:Label text="Gross shows:"/>
+		<mx:ColumnChart id="viewer"
+						height="100%"
+						width="100%"
+						showDataTips="true"
+						dataTipFunction="tipFunction"
+						dataProvider="{_dataProvider}"
+						styleName="customClass"
+			>
+			<mx:horizontalAxis>
+				<mx:CategoryAxis categoryField="entry"/>
+			</mx:horizontalAxis>
+
+			<mx:series>
+				<mx:ColumnSeries
+					labelPosition="outside"
+					xField="entry"
+					yField="shows"
+					displayName="Shows"
+					>
+					<mx:fill>
+						<mx:SolidColor color="#ff8100"/>
+					</mx:fill>
+					<mx:stroke>
+						<mx:SolidColorStroke color="#000000"/>
+					</mx:stroke>
+				</mx:ColumnSeries>
+			</mx:series>
+		</mx:ColumnChart>
+		<s:Button label="Back to «{_project.displayName}»" click="goToProjectInfo()"/>
+	</s:VGroup>
+</presentation:PageBase>

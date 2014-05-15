@@ -3,11 +3,8 @@
  * @author v.pavkin
  */
 package com.qiwi.marketing.project.visit {
-import com.qiwi.marketing.project.Project;
 import com.qiwi.marketing.project.ProjectVersion;
 import com.qiwi.marketing.project.visit.path.Path;
-
-import mx.collections.ArrayCollection;
 
 public class Visit {
 
@@ -15,16 +12,18 @@ public class Visit {
 	public var txnDate:Date;
 	public var txnDateStr:String;
 	public var trmId:int;
+	public var cashInserted:int;
 
 	public var version:ProjectVersion;
 
 	public var path:Path;
 
-	public var fields:Vector.<VisitField>;	//of VisitField
+	public var fields:Vector.<VisitField>;
 
 
-	public function Visit(txnId:String, txnDate:String, trmId:int, version:ProjectVersion, path:Path, fields:Vector.<VisitField>) {
+	public function Visit(txnId:String, txnDate:String, trmId:int, cashInserted:int, version:ProjectVersion, path:Path, fields:Vector.<VisitField>) {
 		this.txnId = txnId;
+		this.cashInserted = cashInserted;
 		this.txnDate = dateFromCSVFormat(txnDate);
 		this.txnDateStr = txnDate;
 		this.trmId = trmId;
@@ -34,6 +33,20 @@ public class Visit {
 
 		if (path)
 			path.visit = this;
+	}
+
+	public function visitorPayed():Boolean {
+		return cashInserted > 0;
+	}
+
+	public function fieldValue(key:String):String {
+		var flength:int = fields.length;
+		for (var i:int = 0; i < flength; i++) {
+			var visitField:VisitField = fields[i];
+			if (visitField.field.key == key)
+				return visitField.value;
+		}
+		return null;
 	}
 
 	/**

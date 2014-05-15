@@ -4,23 +4,44 @@
 -->
 <mx:ViewStack xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:mx="library://ns.adobe.com/flex/mx"
 			  xmlns:s="library://ns.adobe.com/flex/spark" xmlns:presentation="com.qiwi.marketing.presentation.*"
+			  xmlns:viewers="com.qiwi.marketing.presentation.viewers.*"
 			  creationComplete="init()">
 	<fx:Script>
 		<![CDATA[
+		public static const PROJECT_INFO:String = "PROJECT_INFO";
+		public static const PROJECTS_BOARD:String = "PROJECTS_BOARD";
+		public static const SIMPLE_VISITS_VIEWER:String = "SIMPLE_VISITS_VIEWER";
+		public static const GROSS_ENTRIES_VIEWER:String = "GROSS_ENTRIES_VIEWER";
+		public static const FLOW_VIEWER:String = "FLOW_VIEWER";
+
+		private var NAV:Array;
 		private function init():void {
 
-			projectsBoard.addEventListener("open_project", function (e:Event):void {
-				selectedChild = projectInfo;
-			})
-			projectInfo.addEventListener("open_board", function (e:Event):void {
-				selectedChild = projectsBoard;
-			})
-			projectInfo.addEventListener("open_simple_visits_viewer", function (e:Event):void {
-				selectedChild = simpleVisitsViewer;
-			})
-			simpleVisitsViewer.addEventListener("open_project", function (e:Event):void {
-				selectedChild = projectInfo;
-			})
+			NAV = [
+				[projectsBoard, PROJECT_INFO, projectInfo],
+				[projectInfo, PROJECTS_BOARD, projectsBoard],
+
+				[projectInfo, SIMPLE_VISITS_VIEWER, simpleVisitsViewer],
+				[projectInfo, GROSS_ENTRIES_VIEWER, grossEntriesViewer],
+				[projectInfo, FLOW_VIEWER, flowViewer],
+				[simpleVisitsViewer, PROJECT_INFO, projectInfo],
+				[grossEntriesViewer, PROJECT_INFO, projectInfo],
+				[flowViewer, PROJECT_INFO, projectInfo]
+			]
+
+			for (var j:int = 0; j < NAV.length; j++) {
+				NAV[j][0].addEventListener(NAV[j][1], function (e:Event):void {
+					goTo(e.currentTarget, e.type);
+				})
+			}
+		}
+
+		private function goTo(source:Object, event:String):void {
+			for (var j:int = 0; j < NAV.length; j++) {
+				if (NAV[j][0] == source && NAV[j][1] == event) {
+					selectedChild = NAV[j][2];
+				}
+			}
 		}
 		]]>
 	</fx:Script>
@@ -38,6 +59,16 @@
 	<s:NavigatorContent id="simpleVisitsViewer"
 						width="100%"
 						height="100%">
-		<presentation:SimpleVisitsViewer width="100%" height="100%"/>
+		<viewers:SimpleVisitsViewer width="100%" height="100%"/>
+	</s:NavigatorContent>
+	<s:NavigatorContent id="grossEntriesViewer"
+						width="100%"
+						height="100%">
+		<viewers:GrossEntriesViewer width="100%" height="100%"/>
+	</s:NavigatorContent>
+	<s:NavigatorContent id="flowViewer"
+						width="100%"
+						height="100%">
+		<viewers:FlowViewer width="100%" height="100%"/>
 	</s:NavigatorContent>
 </mx:ViewStack>

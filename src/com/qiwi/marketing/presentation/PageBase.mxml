@@ -10,10 +10,18 @@
 		 controlBarVisible="false">
 
 	<fx:Script><![CDATA[
+		import com.qiwi.marketing.data.storage.LocalStorage;
+		import com.qiwi.marketing.project.Project;
+
 		import mx.containers.ViewStack;
 		import mx.events.FlexEvent;
 
 		private var vsView:DisplayObject;
+
+		[Bindable]
+		protected var _project:Project;
+		[Bindable]
+		protected var _localStorage:LocalStorage = LocalStorage.instance;
 
 		public function onCreationComplete():void {
 
@@ -33,8 +41,18 @@
 			onShow();
 		}
 
+		protected function goToProjectInfo():void {
+			dispatchEvent(new Event(ContentViewStack.PROJECT_INFO, true));
+		}
+
 		protected function onShow(e:Event = null):void {
-			//is overriden
+			_project = null;
+			_project = Context.currentProject;
+			title = displayName + (_project ? ": «" + _project.displayName + "»" : "");
+		}
+
+		protected function get displayName():String {
+			return "";
 		}
 		]]></fx:Script>
 </s:Panel>

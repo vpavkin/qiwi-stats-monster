@@ -3,9 +3,9 @@
  * @author v.pavkin
  */
 package com.qiwi.marketing.data.storage {
-import com.qiwi.marketing.data.importing.PathStringParser;
 import com.qiwi.marketing.project.Project;
 import com.qiwi.marketing.project.ProjectField;
+import com.qiwi.marketing.project.ProjectFlow;
 import com.qiwi.marketing.project.entry.CustomEntry;
 import com.qiwi.marketing.project.entry.DataEntry;
 import com.qiwi.marketing.project.entry.ErrorEntry;
@@ -26,6 +26,7 @@ public class StorageSerializer {
 			var p:Project = new Project(projectItem.number, projectItem.name, projectItem.displayName, projectItem.versionRegExp);
 			serializeEntries(p, projectItem);
 			serializeFields(p, projectItem);
+			serializeFlows(p, projectItem);
 			return p;
 		}));
 	}
@@ -33,6 +34,12 @@ public class StorageSerializer {
 	public static function serializeFields(project:Project, source:Object):void {
 		project.fields = Vector.<ProjectField>(source.fields.map(function (item:*, index:int, array:*):ProjectField {
 			return new ProjectField(item.key, item.displayName);
+		}))
+	}
+
+	public static function serializeFlows(project:Project, source:Object):void {
+		project.flows = Vector.<ProjectFlow>(source.flows.map(function (item:*, index:int, array:*):ProjectFlow {
+			return new ProjectFlow(item.name, item.entries.join("|"));
 		}))
 	}
 
@@ -53,10 +60,9 @@ public class StorageSerializer {
 		})
 	}
 
-
 	public static function serializeVisits(visits:Vector.<Object>, project:Project):Vector.<Visit> {
 		return Vector.<Visit>(visits.map(function (item:Object, index:int, array:*):* {
-			return new Visit(item.txnId, item.txnDate, item.trmId, project.resolveVersion(item.version.value), serializePath(item.path, project), serializeVisitFields(item.fields, project));
+			return new Visit(item.txnId, item.txnDate, item.trmId, item.cashInserted, project.resolveVersion(item.version.value), serializePath(item.path, project), serializeVisitFields(item.fields, project));
 		}))
 	}
 
@@ -72,7 +78,7 @@ public class StorageSerializer {
 
 	private static function serializePathSteps(steps:Vector.<Object>, project:Project):Vector.<PathStep> {
 		return Vector.<PathStep>(steps.map(function (item:*, index:int, array:*):* {
-			return new PathStep(PathStringParser.parseEntry(item.projectEntry.id, project).entry, item.time, item.data);
+			return new PathStep(item.entry, item.time, item.data);
 		}))
 	}
 }

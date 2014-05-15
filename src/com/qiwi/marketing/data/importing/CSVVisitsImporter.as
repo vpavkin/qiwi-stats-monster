@@ -18,14 +18,13 @@ import mx.controls.Alert;
 
 public class CSVVisitsImporter {
 
-	public static const COMMON_VARS:Object = {
-		PROJECT_NUMBER: "MGT_PROJECT_NUMBER",
-		DATE          : "TXN_DATE",
-		ID            : "TXN_ID",
-		TRM_ID        : "TRM_ID",
-		VERSION       : "MGT_VER",
-		PATH          : "MGT_PATH"
-	};
+	public static const PROJECT_NUMBER:String = "MGT_PROJECT_NUMBER";
+	public static const DATE:String = "TXN_DATE";
+	public static const ID:String = "TXN_ID";
+	public static const TRM_ID:String = "TRM_ID";
+	public static const VERSION:String = "MGT_VER";
+	public static const PATH:String = "MGT_PATH";
+	public static const SUM:String = "MGT_SUM";
 
 	public static function importToLocalStorage(file:File):void {
 		if (!file.exists) {
@@ -59,7 +58,7 @@ public class CSVVisitsImporter {
 			}
 			visits.push(obj);
 		}
-		var project:Project = LocalStorage.instance.resolveProject(int(visits[0][COMMON_VARS.PROJECT_NUMBER]));
+		var project:Project = LocalStorage.instance.resolveProject(int(visits[0][PROJECT_NUMBER]));
 		var result:Vector.<Visit> = Vector.<Visit>(visits.map(function (item:Object, index:int, array:Vector.<Object>):Visit {
 
 			var visitFields:Vector.<VisitField> = new Vector.<VisitField>();
@@ -68,20 +67,21 @@ public class CSVVisitsImporter {
 			}
 
 			var v:Visit = new Visit(
-				item[COMMON_VARS.ID],
-				item[COMMON_VARS.DATE],
-				item[COMMON_VARS.TRM_ID],
-				project.resolveVersion(item[COMMON_VARS.VERSION]),
-				new Path(item[COMMON_VARS.PATH], project),
+				item[ID],
+				item[DATE],
+				item[TRM_ID],
+				int(item[SUM]),
+				project.resolveVersion(item[VERSION]),
+				new Path(item[PATH], project),
 				visitFields
 			);
-			if (index % 100 == 0) {
-				trace(index + " -> " + item[COMMON_VARS.PATH]);
+			if (index % 10000 == 0) {
+				trace(index + " -> " + item[PATH]);
 			}
 			return v;
 
 		}));
-		LocalStorage.instance.addVisits(result,project);
+		LocalStorage.instance.addVisits(result, project);
 	}
 
 }

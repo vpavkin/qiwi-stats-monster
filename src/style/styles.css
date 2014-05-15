@@ -114,6 +114,28 @@ s|TextArea {
 	focusedTextSelectionColor: #ff9900;
 }
 
+.customClass{
+	fontSize: 14px;
+	fontFamily: "sans";
+	textAlign: center;
+}
+
+
+/*mx|ColumnSeries s|Label {*/
+	/*fontFamily: "Myriad Pro";*/
+	/*fontSize: 30px;*/
+/*}*/
+
+/*mx|ColumnChart s|Label {*/
+	/*fontFamily: "Myriad Pro";*/
+	/*fontSize: 30px;*/
+/*}*/
+
+mx|DataTip {
+	fontFamily: "Myriad Pro MX";
+	backgroundColor: #000000;
+}
+
 presentation|ProjectsBoard, presentation|ProjectsBoard s|*, presentation|ProjectsBoard mx|* {
 	fontSize: 30px;
 }

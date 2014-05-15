@@ -37,7 +37,7 @@ public class VisitsStorageManager {
 		for each (var pf:File in pFiles) {
 			if (pf.isDirectory || !/^\d\d-\d\d\-\d\d\d\d\.st$/.test(pf.name))
 				continue;
-			project.visits[pf.name.split(".")[0]] = VisitsStorageManager.loadHeader(project, pf);
+			project.visits[pf.name.split(".")[0]] = VisitsStorageManager.loadHeader(pf);
 		}
 	}
 
@@ -55,8 +55,8 @@ public class VisitsStorageManager {
 		return StorageSerializer.serializeVisits(dov, project);
 	}
 
-	public static function loadHeader(project:Project, file:File):DayOfVisits {
-		return new DayOfVisits(project, fileNameToDate(file.name))
+	public static function loadHeader(file:File):DayOfVisits {
+		return new DayOfVisits(fileNameToDate(file.name))
 	}
 
 	public static function fileNameToDate(name:String):Date {

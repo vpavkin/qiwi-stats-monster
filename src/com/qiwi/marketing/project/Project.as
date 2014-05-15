@@ -13,6 +13,7 @@ import com.qiwi.marketing.project.entry.ServiceEntry;
 import com.qiwi.marketing.project.visit.DayOfVisits;
 
 import mx.collections.ArrayCollection;
+import mx.collections.ArrayList;
 
 public class Project {
 
@@ -31,7 +32,9 @@ public class Project {
 
 	public var fields:Vector.<ProjectField>; // of ProjectField
 	[Bindable]
-	public var visits:Object;// ["DD-MM-YYYY"]=DayOfVisits
+	public var visits:Object; // ["DD-MM-YYYY"]=DayOfVisits
+	[Bindable]
+	public var flows:Vector.<ProjectFlow>;
 
 	private var _versionRegExpInstance:RegExp;
 
@@ -58,15 +61,15 @@ public class Project {
 		return res;
 	}
 
-	[Bindable]
 	public function get visitsOverview():ArrayCollection {
 		var res:ArrayCollection = new ArrayCollection();
 		for (var key:String in visits) {
+			var dv:DayOfVisits = DayOfVisits(visits[key]);
 			res.addItem({
 				date      : key,
-				visits    : DayOfVisits(visits[key]).visits.length,
-				pays      : 0,
-				conversion: "0%"
+				visits    : dv.visits.length,
+				pays      : dv.paysCount,
+				conversion: dv.conversionDisplay
 			});
 		}
 		return res;
@@ -146,6 +149,20 @@ public class Project {
 		}
 		trace("***** Exception: Field '" + key + "' was not resolved");
 		return null;
+	}
+
+	public function resolveEntry(str:String):IProjectEntry {
+		var arr:Array = [pages, errors, services, exits, dataEntries, otherEntries];
+		for (var i:int = 0; i < arr.length; i++) {
+			var item:* = arr[i];
+			var len:uint = item.length;
+			for (var j:int = 0; j < len; j++) {
+				var entry:IProjectEntry = item[j];
+				if (entry.id == str)
+					return entry;
+			}
+		}
+		return new CustomEntry(str, "Unknown", "Unknown");
 	}
 }
 }
