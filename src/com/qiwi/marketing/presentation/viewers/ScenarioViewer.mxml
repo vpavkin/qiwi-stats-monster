@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<!--
+  Created by v.pavkin on 18.04.2014.
+-->
+<viewers:FlowViewer xmlns:fx="http://ns.adobe.com/mxml/2009"
+					xmlns:viewers="com.qiwi.marketing.presentation.viewers.*">
+	<fx:Script><![CDATA[
+		import com.qiwi.marketing.project.scenarios.FlowEntryData;
+		import com.qiwi.marketing.project.scenarios.ProjectScenario;
+		import com.qiwi.marketing.project.scenarios.ScenarioProcessor;
+		import com.qiwi.marketing.utils.VectorUtils;
+
+		override protected function updateScenarios():void {
+			_scenarios = VectorUtils.toArrayCollection(_project.scenarios)
+		}
+
+		override protected function getData():* {
+			var flow:Vector.<FlowEntryData> = ScenarioProcessor.getScenarioData(_project, _selectedDate, ProjectScenario(_selectedScenario), _selectedVersion)
+			return flow;
+		}
+
+		override protected function get displayName():String {
+			return "Scenario Viewer";
+		}
+		]]></fx:Script>
+
+
+</viewers:FlowViewer>

@@ -13,6 +13,7 @@
 		public static const SIMPLE_VISITS_VIEWER:String = "SIMPLE_VISITS_VIEWER";
 		public static const GROSS_ENTRIES_VIEWER:String = "GROSS_ENTRIES_VIEWER";
 		public static const FLOW_VIEWER:String = "FLOW_VIEWER";
+		public static const SCENARIO_VIEWER:String = "SCENARIO_VIEWER";
 
 		private var NAV:Array;
 		private function init():void {
@@ -24,9 +25,11 @@
 				[projectInfo, SIMPLE_VISITS_VIEWER, simpleVisitsViewer],
 				[projectInfo, GROSS_ENTRIES_VIEWER, grossEntriesViewer],
 				[projectInfo, FLOW_VIEWER, flowViewer],
+				[projectInfo, SCENARIO_VIEWER, scenarioViewer],
 				[simpleVisitsViewer, PROJECT_INFO, projectInfo],
 				[grossEntriesViewer, PROJECT_INFO, projectInfo],
-				[flowViewer, PROJECT_INFO, projectInfo]
+				[flowViewer, PROJECT_INFO, projectInfo],
+				[scenarioViewer, PROJECT_INFO, projectInfo]
 			]
 
 			for (var j:int = 0; j < NAV.length; j++) {
@@ -70,5 +73,10 @@
 						width="100%"
 						height="100%">
 		<viewers:FlowViewer width="100%" height="100%"/>
+	</s:NavigatorContent>
+	<s:NavigatorContent id="scenarioViewer"
+						width="100%"
+						height="100%">
+		<viewers:ScenarioViewer width="100%" height="100%"/>
 	</s:NavigatorContent>
 </mx:ViewStack>

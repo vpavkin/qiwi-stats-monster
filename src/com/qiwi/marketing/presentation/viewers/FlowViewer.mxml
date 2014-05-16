@@ -21,33 +21,33 @@
 		import mx.charts.chartClasses.Series;
 		import mx.collections.ArrayCollection;
 
-		private var _selectedDate:String;
-		private var _selectedFlow:ProjectFlow;
-		private var _selectedVersion:ProjectVersion;
+		protected var _selectedDate:String;
+		protected var _selectedScenario:ProjectFlow;
+		protected var _selectedVersion:ProjectVersion;
 
 		[Bindable]
-		private var _dataProvider:ArrayCollection;
+		protected var _dataProvider:ArrayCollection;
 		[Bindable]
-		private var _flows:ArrayCollection;
+		protected var _scenarios:ArrayCollection;
 		[Bindable]
-		private var _versions:ArrayCollection;
+		protected var _versions:ArrayCollection;
 
 		override protected function onShow(e:Event = null):void {
 			super.onShow(e);
 			reset()
-			updateFlows();
+			updateScenarios();
 			updateVersions();
 		}
 		private function reset():void {
 			viewer.dataProvider = null;
 			_selectedDate = null;
-			_selectedFlow = null;
+			_selectedScenario = null;
 			_selectedVersion = ProjectVersion.ALL_VERSIONS;
-			versionComboBox.selectedIndex = dateComboBox.selectedIndex = flowComboBox.selectedIndex = -1;
+			versionComboBox.selectedIndex = dateComboBox.selectedIndex = scenarioComboBox.selectedIndex = -1;
 		}
 
-		private function updateFlows():void {
-			_flows = VectorUtils.toArrayCollection(_project.flows)
+		protected function updateScenarios():void {
+			_scenarios = VectorUtils.toArrayCollection(_project.flows)
 		}
 
 		private function updateVersions():void {
@@ -64,9 +64,9 @@
 			}
 		}
 
-		private function onSelectedFlowChanged():void {
-			if (flowComboBox.selectedItem && flowComboBox.selectedItem != _selectedFlow) {
-				_selectedFlow = flowComboBox.selectedItem;
+		private function onSelectedScenarioChanged():void {
+			if (scenarioComboBox.selectedItem && scenarioComboBox.selectedItem != _selectedScenario) {
+				_selectedScenario = scenarioComboBox.selectedItem;
 				checkChange()
 			}
 		}
@@ -76,13 +76,18 @@
 			checkChange()
 		}
 
-		private function checkChange():void {
-			if (!dateComboBox.selectedItem || !flowComboBox.selectedItem)
+		protected function checkChange():void {
+			if (!dateComboBox.selectedItem || !scenarioComboBox.selectedItem)
 				return;
 
-			var flow:Vector.<FlowEntryData> = ScenarioProcessor.getFlowData(_project, _selectedDate, _selectedFlow, _selectedVersion)
+			var flow:Vector.<FlowEntryData> = getData();
 			_dataProvider = VectorUtils.toArrayCollection(flow);
 			updateVersions()
+		}
+
+		protected function getData():* {
+			var flow:Vector.<FlowEntryData> = ScenarioProcessor.getFlowData(_project, _selectedDate, _selectedScenario, _selectedVersion)
+			return flow;
 		}
 
 		override protected function get displayName():String {
@@ -106,8 +111,9 @@
 			<s:Label text="Choose date:"/>
 			<s:ComboBox id="dateComboBox" dataProvider="{_project.datesAvailable}" requireSelection="false"
 						change="onSelectedDateChanged()"/>
-			<s:ComboBox id="flowComboBox" dataProvider="{_flows}" width="200" labelField="name" requireSelection="false"
-						change="onSelectedFlowChanged()"/>
+			<s:ComboBox id="scenarioComboBox" dataProvider="{_scenarios}" width="200" labelField="name"
+						requireSelection="false"
+						change="onSelectedScenarioChanged()"/>
 			<s:ComboBox id="versionComboBox" dataProvider="{_versions}" labelField="value"
 						requireSelection="true"
 						change="onSelectedVersionChanged()"/>

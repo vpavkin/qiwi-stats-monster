@@ -7,7 +7,6 @@ import com.qiwi.marketing.data.storage.LocalStorage;
 import com.qiwi.marketing.data.storage.VisitsStorageManager;
 import com.qiwi.marketing.project.Project;
 import com.qiwi.marketing.project.ProjectField;
-import com.qiwi.marketing.project.scenarios.ProjectFlow;
 import com.qiwi.marketing.project.entry.CustomEntry;
 import com.qiwi.marketing.project.entry.DataEntry;
 import com.qiwi.marketing.project.entry.ErrorEntry;
@@ -15,6 +14,9 @@ import com.qiwi.marketing.project.entry.ExitEntry;
 import com.qiwi.marketing.project.entry.IProjectEntry;
 import com.qiwi.marketing.project.entry.PageEntry;
 import com.qiwi.marketing.project.entry.ServiceEntry;
+import com.qiwi.marketing.project.scenarios.ProjectFlow;
+import com.qiwi.marketing.project.scenarios.ProjectScenario;
+import com.qiwi.marketing.project.scenarios.constraints.ConstraintsParser;
 
 import flash.filesystem.File;
 import flash.filesystem.FileMode;
@@ -80,6 +82,7 @@ public class XMLProjectsImporter {
 		res.otherEntries = Vector.<CustomEntry>(parseEntry(xml, TAGS.OTHER));
 		res.fields = Vector.<ProjectField>(parseFields(xml));
 		res.flows = Vector.<ProjectFlow>(parseFlows(xml));
+		res.scenarios = Vector.<ProjectScenario>(parseScenarios(xml));
 		return res;
 	}
 
@@ -88,6 +91,17 @@ public class XMLProjectsImporter {
 		var list:XMLList = xml.flows.flow;
 		for each (var item:XML in list) {
 			result.push(new ProjectFlow(item.@name, item.@entries));
+		}
+		return result;
+	}
+
+	private static function parseScenarios(xml:XML):Array {
+		var result:Array = [];
+		var list:XMLList = xml.scenarios.scenario;
+		for each (var item:XML in list) {
+			var scenario:ProjectScenario = new ProjectScenario(item.@name, item.@entries, ConstraintsParser.parseList(item));
+			scenario.source = item;
+			result.push(scenario);
 		}
 		return result;
 	}

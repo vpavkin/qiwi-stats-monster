@@ -5,13 +5,15 @@
 package com.qiwi.marketing.data.storage {
 import com.qiwi.marketing.project.Project;
 import com.qiwi.marketing.project.ProjectField;
-import com.qiwi.marketing.project.scenarios.ProjectFlow;
 import com.qiwi.marketing.project.entry.CustomEntry;
 import com.qiwi.marketing.project.entry.DataEntry;
 import com.qiwi.marketing.project.entry.ErrorEntry;
 import com.qiwi.marketing.project.entry.ExitEntry;
 import com.qiwi.marketing.project.entry.PageEntry;
 import com.qiwi.marketing.project.entry.ServiceEntry;
+import com.qiwi.marketing.project.scenarios.ProjectFlow;
+import com.qiwi.marketing.project.scenarios.ProjectScenario;
+import com.qiwi.marketing.project.scenarios.constraints.ConstraintsParser;
 import com.qiwi.marketing.project.visit.Visit;
 import com.qiwi.marketing.project.visit.VisitField;
 import com.qiwi.marketing.project.visit.path.Path;
@@ -40,7 +42,14 @@ public class StorageSerializer {
 	public static function serializeFlows(project:Project, source:Object):void {
 		project.flows = Vector.<ProjectFlow>(source.flows.map(function (item:*, index:int, array:*):ProjectFlow {
 			return new ProjectFlow(item.name, item.entries.join("|"));
-		}))
+		}));
+		if (source.scenarios) {
+			project.scenarios = Vector.<ProjectScenario>(source.scenarios.map(function (item:*, index:int, array:*):ProjectScenario {
+				var res:ProjectScenario = new ProjectScenario(item.name, item.entries.join("|"), ConstraintsParser.parseList(item.source));
+				res.source = item.source;
+				return res;
+			}))
+		}
 	}
 
 	public static function serializeEntries(project:Project, source:Object):void {

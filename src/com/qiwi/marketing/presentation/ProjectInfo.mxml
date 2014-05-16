@@ -17,8 +17,8 @@
 
 		override protected function onShow(e:Event = null):void {
 			super.onShow(e);
-			_data =  _project.visitsOverview;
-			overview.setActualSize(1000,1000)
+			_data = _project.visitsOverview;
+			overview.setActualSize(1000, 1000)
 			//overview.percentWidth = overview.percentWidth == 100 ? 99 : 100;
 		}
 
@@ -49,6 +49,10 @@
 			dispatchEvent(new Event(ContentViewStack.FLOW_VIEWER, true));
 		}
 
+		private function onShowScenarioViewerClick():void {
+			dispatchEvent(new Event(ContentViewStack.SCENARIO_VIEWER, true));
+		}
+
 		override protected function get displayName():String {
 			return "Project Info";
 		}
@@ -73,10 +77,11 @@
 		</s:VGroup>
 		<s:VGroup gap="15" paddingTop="15" width="50%">
 			<s:Button id="importVisits" click="onImportVisitsClick()" label="Import New Data" height="50"/>
-			<s:Button id="loadLatestVisits" click="onLoadLatestVisitsClick()" label="Load Latest 10" height="50"/>
-			<s:Button id="showSimpleVisits" click="onShowSimpleVisitsClick()" label="Simple Visits Viewer" height="50"/>
-			<s:Button id="showGrossEntries" click="onShowGrossEntriesClick()" label="Gross Entries Viewer" height="50"/>
+			<!--<s:Button id="loadLatestVisits" click="onLoadLatestVisitsClick()" label="Load Latest 10" height="50"/>-->
+			<!--<s:Button id="showSimpleVisits" click="onShowSimpleVisitsClick()" label="Simple Visits Viewer" height="50"/>-->
+			<!--<s:Button id="showGrossEntries" click="onShowGrossEntriesClick()" label="Gross Entries Viewer" height="50"/>-->
 			<s:Button id="showFlowViewer" click="onShowFlowViewerClick()" label="Flow Viewer" height="50"/>
+			<s:Button id="showScenarioViewer" click="onShowScenarioViewerClick()" label="Scenario Viewer" height="50"/>
 		</s:VGroup>
 	</s:HGroup>
 </presentation:PageBase>
