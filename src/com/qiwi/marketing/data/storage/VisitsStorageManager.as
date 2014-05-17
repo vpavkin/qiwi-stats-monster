@@ -60,12 +60,9 @@ public class VisitsStorageManager {
 	}
 
 	public static function fileNameToDate(name:String):Date {
-		var dmy:Array = name.split(".");
+		var dmy:Array = name.split(".")[0].split("-");
 		return new Date(dmy[2], Number(dmy[1]) - 1, dmy[0]);
 	}
-	//public static function dateToFileName(date:Date):Date {
-	//	return new Date(dmy[2], Number(dmy[1]) - 1, dmy[0]);
-	//}
 
 	public function saveVisits(project:Project):void {
 		var pd:File = _dataDirectory.resolvePath(project.number.toString());

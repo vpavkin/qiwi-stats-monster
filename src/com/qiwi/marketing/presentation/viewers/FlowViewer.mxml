@@ -108,7 +108,7 @@
 
 	<s:VGroup height="100%" width="100%">
 		<s:HGroup gap="20">
-			<s:Label text="Choose date:"/>
+			<s:Label text="Выберите дату и сценарий:"/>
 			<s:ComboBox id="dateComboBox" dataProvider="{_project.datesAvailable}" requireSelection="false"
 						change="onSelectedDateChanged()"/>
 			<s:ComboBox id="scenarioComboBox" dataProvider="{_scenarios}" width="200" labelField="name"
@@ -118,7 +118,7 @@
 						requireSelection="true"
 						change="onSelectedVersionChanged()"/>
 		</s:HGroup>
-		<s:Label text="Gross shows:"/>
+		<s:Label text="Результаты:"/>
 		<s:Group height="100%"
 				 width="100%">
 			<mx:ColumnChart id="viewer"

@@ -70,6 +70,7 @@ public class Project {
 			var dv:DayOfVisits = DayOfVisits(visits[key]);
 			res.addItem({
 				date      : key,
+				dateTime  : dv.date.getTime(),
 				visits    : dv.visits.length,
 				pays      : dv.paysCount,
 				conversion: dv.conversionDisplay
