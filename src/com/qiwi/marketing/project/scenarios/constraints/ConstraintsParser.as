@@ -16,6 +16,9 @@ public class ConstraintsParser {
 						return new ContainsStringConstraint(xml.@string);
 				}
 				break;
+			case "regexp":
+				return new RegexpConstraint(new RegExp(xml.@value));
+
 		}
 		return null;
 	}
