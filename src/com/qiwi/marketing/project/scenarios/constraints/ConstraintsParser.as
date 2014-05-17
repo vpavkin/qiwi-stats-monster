@@ -16,6 +16,14 @@ public class ConstraintsParser {
 						return new ContainsStringConstraint(xml.@string);
 				}
 				break;
+			case "excludes":
+				switch (xml.attributes()[0].name().localName) {
+					case "entry":
+						return new ExcludesEntryConstraint(xml.@entry);
+					case "string":
+						return new ExcludesStringConstraint(xml.@string);
+				}
+				break;
 			case "regexp":
 				return new RegexpConstraint(new RegExp(xml.@value));
 
