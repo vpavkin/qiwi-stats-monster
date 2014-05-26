@@ -13,8 +13,10 @@ import com.qiwi.marketing.project.entry.ServiceEntry;
 import com.qiwi.marketing.project.scenarios.ProjectFlow;
 import com.qiwi.marketing.project.scenarios.ProjectScenario;
 import com.qiwi.marketing.project.visit.DayOfVisits;
+import com.qiwi.marketing.utils.DateKeyUtils;
 
 import mx.collections.ArrayCollection;
+import mx.collections.Sort;
 
 public class Project {
 
@@ -76,15 +78,9 @@ public class Project {
 				conversion: dv.conversionDisplay
 			});
 		}
-		return res;
-	}
-
-	[Bindable]
-	public function get datesAvailable():ArrayCollection {
-		var res:ArrayCollection = new ArrayCollection();
-		for (var key:String in visits) {
-			res.addItem(key);
-		}
+		res.sort = new Sort();
+		res.sort.compareFunction = DateKeyUtils.compareFunction;
+		res.refresh();
 		return res;
 	}
 

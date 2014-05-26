@@ -37,7 +37,7 @@
 	<s:VGroup height="100%" width="100%">
 		<s:HGroup gap="20">
 			<s:Label text="Choose date:"/>
-			<s:ComboBox id="dateComboBox" dataProvider="{_project.datesAvailable}" requireSelection="false"
+			<s:ComboBox id="dateComboBox" dataProvider="{_project.visitsOverview}" labelField="date" requireSelection="false"
 						change="onSelectedDateChanged()"/>
 		</s:HGroup>
 		<s:Label text="First 100 visits of the day:"/>
