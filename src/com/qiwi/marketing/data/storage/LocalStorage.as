@@ -67,7 +67,7 @@ public class LocalStorage {
 		return null;
 	}
 
-	private static function dateToStringKey(s:String):String {
+	public static function dateToStringKey(s:String):String {
 		return s.substr(8, 2) + s.substr(4, 3) + "-" + s.substr(0, 4);
 	}
 

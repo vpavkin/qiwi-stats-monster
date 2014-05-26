@@ -20,5 +20,19 @@ public class FlowEntryData {
 		this.enters = enters;
 		this.payments = payments;
 	}
+
+	public function toCSVString(totalEnters:uint = -1):String {
+		return [
+			entry,
+			entryName.replace(/\n/g, " "),
+			enters,
+			(totalEnters == -1) ? "" : (enters / totalEnters).toString().replace(".", ","),
+			payments,
+			(totalEnters == -1) ? "" : (payments / totalEnters).toString().replace(".", ",")].join("\t");
+	}
+
+	public static function CSVHeader():String {
+		return ["Код", "Описание", "Входов", "% дошедших", "Платежей", "% оплативших"].join("\t");
+	}
 }
 }

@@ -7,6 +7,7 @@
 					   xmlns:presentation="com.qiwi.marketing.presentation.*">
 
 	<fx:Script><![CDATA[
+		import com.qiwi.marketing.data.exporting.DayOfVisitsCSVExporter;
 		import com.qiwi.marketing.data.importing.CSVVisitsImporter;
 
 		import mx.collections.ArrayCollection;
@@ -14,6 +15,8 @@
 
 		[Bindable]
 		private var _data:ArrayCollection;
+
+		private var _dateSelected:Object;
 
 		override protected function onShow(e:Event = null):void {
 			super.onShow(e);
@@ -67,11 +70,27 @@
 				return 1;
 			return 0
 		}
+
+		private function onDateSelected():void {
+			_dateSelected = overview.selectedItem;
+		}
+
+		private function onExportClick():void {
+			var f:File = File.documentsDirectory.resolvePath(_project.number + "_" + _dateSelected.date + ".csv");
+			f.addEventListener(Event.SELECT, onSelectFileForSave)
+			f.browseForSave("Сохранить CSV-файл за " + _dateSelected.date);
+
+		}
+		private function onSelectFileForSave(event:Event):void {
+			var f:File = File(event.target);
+			DayOfVisitsCSVExporter.export(f, _project, _dateSelected.date);
+		}
 		]]></fx:Script>
 
 	<s:HGroup gap="20" width="100%" height="100%" requestedColumnCount="2">
 		<s:VGroup gap="10" paddingTop="15" width="50%" height="100%" requestedRowCount="2">
-			<s:DataGrid id="overview" width="100%" height="100%" dataProvider="{_data}">
+			<s:DataGrid id="overview" width="100%" height="100%" dataProvider="{_data}"
+						selectionChange="onDateSelected()">
 				<s:columns>
 					<s:ArrayList>
 						<s:GridColumn dataField="date" headerText="Дата" sortable="true"
@@ -91,6 +110,8 @@
 			<!--<s:Button id="showGrossEntries" click="onShowGrossEntriesClick()" label="Gross Entries Viewer" height="50"/>-->
 			<s:Button id="showFlowViewer" click="onShowFlowViewerClick()" label="Flow Viewer" height="50"/>
 			<s:Button id="showScenarioViewer" click="onShowScenarioViewerClick()" label="Scenario Viewer" height="50"/>
+			<s:Button id="exportDate" enabled="{overview.selectionLength > 0}" click="onExportClick()"
+					  label="Экспорт в CSV" height="50"/>
 		</s:VGroup>
 	</s:HGroup>
 </presentation:PageBase>
