@@ -12,6 +12,12 @@ public class DateKeyUtils {
 	}
 
 	public static function compareFunction(p1:Object, p2:Object, c:* = null):int {
+		if (p1 == null && p2 == null)
+			return 0;
+		if (p1 == null)
+			return 1;
+		if (p2 == null)
+			return -1;
 		if (p1.dateTime < p2.dateTime)
 			return -1;
 		else if (p1.dateTime > p2.dateTime)

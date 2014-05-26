@@ -15,7 +15,7 @@
 		}
 
 		override protected function getData():* {
-			var flow:Vector.<FlowEntryData> = ScenarioProcessor.getScenarioData(_project, _selectedDate, ProjectScenario(_selectedScenario), _selectedVersion)
+			var flow:Vector.<FlowEntryData> = ScenarioProcessor.getScenarioData(_project, _selectedDate.date, ProjectScenario(_selectedScenario), _selectedVersion)
 			return flow;
 		}
 

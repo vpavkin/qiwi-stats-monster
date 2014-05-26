@@ -66,6 +66,7 @@ public class Project {
 		return res;
 	}
 
+	[Bindable]
 	public function get visitsOverview():ArrayCollection {
 		var res:ArrayCollection = new ArrayCollection();
 		for (var key:String in visits) {

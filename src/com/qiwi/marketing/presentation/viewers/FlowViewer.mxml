@@ -21,7 +21,7 @@
 		import mx.charts.chartClasses.Series;
 		import mx.collections.ArrayCollection;
 
-		protected var _selectedDate:String;
+		protected var _selectedDate:Object;
 		protected var _selectedScenario:ProjectFlow;
 		protected var _selectedVersion:ProjectVersion;
 
@@ -34,7 +34,16 @@
 
 		override protected function onShow(e:Event = null):void {
 			super.onShow(e);
+			dateComboBox.executeBindings(true);
 			reset()
+
+			for (var j:int = 0; j < dateComboBox.dataProvider.length; j++) {
+				if (dateComboBox.dataProvider.getItemAt(j).date == Context.currentDate) {
+					dateComboBox.selectedItem = dateComboBox.dataProvider.getItemAt(j);
+					onSelectedDateChanged();
+					break;
+				}
+			}
 			updateScenarios();
 			updateVersions();
 		}
@@ -86,7 +95,7 @@
 		}
 
 		protected function getData():* {
-			var flow:Vector.<FlowEntryData> = ScenarioProcessor.getFlowData(_project, _selectedDate, _selectedScenario, _selectedVersion)
+			var flow:Vector.<FlowEntryData> = ScenarioProcessor.getFlowData(_project, _selectedDate.date, _selectedScenario, _selectedVersion)
 			return flow;
 		}
 

@@ -66,6 +66,7 @@
 
 		private function onDateSelected():void {
 			_dateSelected = overview.selectedItem;
+			Context.currentDate = _dateSelected.date;
 		}
 
 		private function onExportClick():void {
