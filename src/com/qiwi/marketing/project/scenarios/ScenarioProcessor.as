@@ -45,7 +45,7 @@ public class ScenarioProcessor {
 	}
 
 
-	private static function getDay(project:Project, date:String):DayOfVisits {
+	public static function getDay(project:Project, date:String):DayOfVisits {
 		var day:DayOfVisits = project.visits[date];
 		if (!day.isLoaded) {
 			day.setVisits(VisitsStorageManager.instance.loadVisits(project, date));

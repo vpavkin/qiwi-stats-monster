@@ -155,7 +155,7 @@ public class Project {
 	}
 
 	public function resolveEntry(str:String):IProjectEntry {
-		var arr:Array = [pages, errors, services, exits, dataEntries, otherEntries];
+		var arr:Array = [pages, errors, services, actions, exits, dataEntries, otherEntries];
 		for (var i:int = 0; i < arr.length; i++) {
 			var item:* = arr[i];
 			var len:uint = item.length;

@@ -121,7 +121,7 @@
 			<s:ComboBox id="dateComboBox" dataProvider="{_project.visitsOverview}" labelField="date"
 						requireSelection="false"
 						change="onSelectedDateChanged()"/>
-			<s:ComboBox id="scenarioComboBox" dataProvider="{_scenarios}" width="200" labelField="name"
+			<s:ComboBox id="scenarioComboBox" dataProvider="{_scenarios}" width="400" labelField="name"
 						requireSelection="false"
 						change="onSelectedScenarioChanged()"/>
 			<s:ComboBox id="versionComboBox" dataProvider="{_versions}" labelField="value"

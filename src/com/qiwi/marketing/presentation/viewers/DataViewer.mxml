@@ -1,0 +1,129 @@
+<?xml version="1.0"?>
+<!--
+  Created by v.pavkin on 18.04.2014.
+-->
+<presentation:PageBase xmlns:s="library://ns.adobe.com/flex/spark"
+					   xmlns:fx="http://ns.adobe.com/mxml/2009"
+					   xmlns:presentation="com.qiwi.marketing.presentation.*">
+
+	<fx:Script><![CDATA[
+		import com.qiwi.marketing.project.ProjectVersion;
+		import com.qiwi.marketing.project.data.DataAnalyzer;
+		import com.qiwi.marketing.project.data.DataEntryAnalysisResult;
+		import com.qiwi.marketing.project.entry.DataEntry;
+		import com.qiwi.marketing.utils.VectorUtils;
+
+		import mx.collections.ArrayCollection;
+
+		protected var _selectedDate:Object;
+		protected var _selectedDataEntry:DataEntry;
+		protected var _selectedVersion:ProjectVersion;
+
+		[Bindable]
+		protected var _dataAnalysisResult:ArrayCollection;
+		[Bindable]
+		protected var _dataEntries:ArrayCollection;
+		[Bindable]
+		protected var _versions:ArrayCollection;
+
+		override protected function onShow(e:Event = null):void {
+			super.onShow(e);
+			dateComboBox.executeBindings(true);
+			reset()
+
+			for (var j:int = 0; j < dateComboBox.dataProvider.length; j++) {
+				if (dateComboBox.dataProvider.getItemAt(j).date == Context.currentDate) {
+					dateComboBox.selectedItem = dateComboBox.dataProvider.getItemAt(j);
+					onSelectedDateChanged();
+					break;
+				}
+			}
+			updateDataEntries();
+			updateVersions();
+		}
+		private function reset():void {
+			resultsGrid.dataProvider = null;
+			_selectedDate = null;
+			_selectedDataEntry = null;
+			_selectedVersion = ProjectVersion.ALL_VERSIONS;
+			versionComboBox.selectedIndex = dateComboBox.selectedIndex = dataEntryComboBox.selectedIndex = -1;
+		}
+
+		protected function updateDataEntries():void {
+			_dataEntries = VectorUtils.toArrayCollection(_project.dataEntries)
+		}
+
+		private function updateVersions():void {
+			var v:ArrayCollection = VectorUtils.toArrayCollection(_project.versions)
+			v.addItemAt(ProjectVersion.ALL_VERSIONS, 0);
+			_versions = v;
+			versionComboBox.toolTip = _versions.length > 1 ? "" : "Не было загружено ни одного дня данных.\nВерсии для фильтрации появятся после первого загруженного дня.";
+		}
+
+		private function onSelectedDateChanged():void {
+			if (dateComboBox.selectedItem && dateComboBox.selectedItem != _selectedDate) {
+				_selectedDate = dateComboBox.selectedItem;
+				checkChange()
+			}
+		}
+
+		private function onSelectedDataEntryChanged():void {
+			if (dataEntryComboBox.selectedItem && dataEntryComboBox.selectedItem != _selectedDataEntry) {
+				_selectedDataEntry = dataEntryComboBox.selectedItem;
+				checkChange()
+			}
+		}
+
+		private function onSelectedVersionChanged():void {
+			_selectedVersion = versionComboBox.selectedItem;
+			checkChange()
+		}
+
+		protected function checkChange():void {
+			if (!dateComboBox.selectedItem || !dataEntryComboBox.selectedItem)
+				return;
+
+			var flow:Vector.<DataEntryAnalysisResult> = getData();
+			_dataAnalysisResult = VectorUtils.toArrayCollection(flow);
+			updateVersions()
+		}
+
+		protected function getData():* {
+			return DataAnalyzer.analyze(_project, _selectedDate.date, _selectedDataEntry, _selectedVersion)
+		}
+
+		override protected function get displayName():String {
+			return "Data Analyzer";
+		}
+		]]></fx:Script>
+
+	<s:VGroup height="100%" width="100%">
+		<s:HGroup gap="20">
+			<s:Label text="Выберите дату и данные:"/>
+			<s:ComboBox id="dateComboBox" dataProvider="{_project.visitsOverview}" labelField="date"
+						requireSelection="false"
+						change="onSelectedDateChanged()"/>
+			<s:ComboBox id="dataEntryComboBox" dataProvider="{_dataEntries}" width="200" labelField="name"
+						requireSelection="false"
+						change="onSelectedDataEntryChanged()"/>
+			<s:ComboBox id="versionComboBox" dataProvider="{_versions}" labelField="value"
+						requireSelection="true"
+						change="onSelectedVersionChanged()"/>
+		</s:HGroup>
+		<s:Label text="Результаты:"/>
+		<s:Group height="100%"
+				 width="100%">
+			<s:DataGrid id="resultsGrid" height="100%" width="100%" dataProvider="{_dataAnalysisResult}">
+				<s:columns>
+					<s:ArrayList>
+						<s:GridColumn dataField="value" headerText="Значение" sortable="true"/>
+						<s:GridColumn dataField="count" headerText="Количество" sortable="true"/>
+						<s:GridColumn dataField="percentString" headerText="Доля" sortable="true"/>
+					</s:ArrayList>
+				</s:columns>
+			</s:DataGrid>
+		</s:Group>
+		<s:Button label="Назад на «{_project.displayName}»" click="goToProjectInfo()"/>
+	</s:VGroup>
+
+</presentation:PageBase>
