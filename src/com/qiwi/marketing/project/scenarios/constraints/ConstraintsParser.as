@@ -8,6 +8,8 @@ public class ConstraintsParser {
 
 	public static function parse(xml:XML):IConstraint {
 		switch (xml.name().localName) {
+			case "no_constraints":
+				return new NoConstraintsConstraint();
 			case "contains":
 				switch (xml.attributes()[0].name().localName) {
 					case "entry":
@@ -26,6 +28,8 @@ public class ConstraintsParser {
 				break;
 			case "regexp":
 				return new RegexpConstraint(new RegExp(xml.@value));
+			case "sequence":
+				return new SequenceConstraint(xml.@start, xml.@thenOnly, xml.@allowsNonPageEntries == "true");
 
 		}
 		return null;
