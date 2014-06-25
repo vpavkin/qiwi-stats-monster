@@ -5,6 +5,7 @@
 package com.qiwi.marketing.data.storage {
 import com.qiwi.marketing.project.Project;
 import com.qiwi.marketing.project.ProjectField;
+import com.qiwi.marketing.project.entry.ActionEntry;
 import com.qiwi.marketing.project.entry.CustomEntry;
 import com.qiwi.marketing.project.entry.DataEntry;
 import com.qiwi.marketing.project.entry.ErrorEntry;
@@ -57,6 +58,7 @@ public class StorageSerializer {
 		project.errors = Vector.<ErrorEntry>(serializeEntryCollection(source.errors, ErrorEntry));
 		project.exits = Vector.<ExitEntry>(serializeEntryCollection(source.exits, ExitEntry));
 		project.services = Vector.<ServiceEntry>(serializeEntryCollection(source.services, ServiceEntry));
+		project.actions = Vector.<ActionEntry>(serializeEntryCollection(source.actions, ActionEntry));
 		project.dataEntries = Vector.<DataEntry>(serializeEntryCollection(source.dataEntries, DataEntry));
 		project.otherEntries = Vector.<CustomEntry>(serializeEntryCollection(source.otherEntries, CustomEntry));
 	}

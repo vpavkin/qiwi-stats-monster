@@ -7,6 +7,7 @@ import com.qiwi.marketing.data.storage.LocalStorage;
 import com.qiwi.marketing.data.storage.VisitsStorageManager;
 import com.qiwi.marketing.project.Project;
 import com.qiwi.marketing.project.ProjectField;
+import com.qiwi.marketing.project.entry.ActionEntry;
 import com.qiwi.marketing.project.entry.CustomEntry;
 import com.qiwi.marketing.project.entry.DataEntry;
 import com.qiwi.marketing.project.entry.ErrorEntry;
@@ -33,6 +34,7 @@ public class XMLProjectsImporter {
 		SERVICE: "service",
 		DATA   : "data",
 		EXIT   : "exit",
+		ACTION : "action",
 		OTHER  : "other"
 	};
 
@@ -77,6 +79,7 @@ public class XMLProjectsImporter {
 		res.pages = Vector.<PageEntry>(parseEntry(xml, TAGS.PAGE));
 		res.errors = Vector.<ErrorEntry>(parseEntry(xml, TAGS.ERROR));
 		res.services = Vector.<ServiceEntry>(parseEntry(xml, TAGS.SERVICE));
+		res.actions = Vector.<ActionEntry>(parseEntry(xml, TAGS.ACTION));
 		res.exits = Vector.<ExitEntry>(parseEntry(xml, TAGS.EXIT));
 		res.dataEntries = Vector.<DataEntry>(parseEntry(xml, TAGS.DATA));
 		res.otherEntries = Vector.<CustomEntry>(parseEntry(xml, TAGS.OTHER));
@@ -142,6 +145,9 @@ public class XMLProjectsImporter {
 				break;
 			case TAGS.SERVICE:
 				entry = new ServiceEntry(item.@id, item.@name, item.toString());
+				break;
+			case TAGS.ACTION:
+				entry = new ActionEntry(item.@id, item.@name, item.toString());
 				break;
 			case TAGS.DATA:
 				var interpretation:Object = {};

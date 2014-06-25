@@ -3,6 +3,7 @@
  * @author v.pavkin
  */
 package com.qiwi.marketing.project {
+import com.qiwi.marketing.project.entry.ActionEntry;
 import com.qiwi.marketing.project.entry.CustomEntry;
 import com.qiwi.marketing.project.entry.DataEntry;
 import com.qiwi.marketing.project.entry.ErrorEntry;
@@ -29,6 +30,7 @@ public class Project {
 	public var pages:Vector.<PageEntry>;
 	public var errors:Vector.<ErrorEntry>;
 	public var services:Vector.<ServiceEntry>;
+	public var actions:Vector.<ActionEntry>;
 	public var exits:Vector.<ExitEntry>;
 	public var dataEntries:Vector.<DataEntry>;
 	public var otherEntries:Vector.<CustomEntry>;
