@@ -11,8 +11,8 @@ public class ProjectScenario extends ProjectFlow {
 	private var _constraints:Vector.<IConstraint>;
 	public var source:XML;
 
-	public function ProjectScenario(name:String, entries:String, constraints:Vector.<IConstraint>) {
-		super(name, entries);
+	public function ProjectScenario(name:String, entries:String, aggregate:Boolean, constraints:Vector.<IConstraint>) {
+		super(name, entries, aggregate);
 		_constraints = constraints
 	}
 

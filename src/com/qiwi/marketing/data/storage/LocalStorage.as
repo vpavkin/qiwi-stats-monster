@@ -25,11 +25,6 @@ public class LocalStorage {
 	private var _visits:Object;
 
 	public function LocalStorage() {
-		//var id:String;
-		//var appDescriptor
-		//var ns:Namespace = appDescriptor.namespace();
-		//var appCopyright:String = appDescriptor.ns::copyright;
-		//Alert(id = .id);
 		projectsList = ProjectsStorageManager.instance.loadProjectsList();
 
 		for each (var p:Project in projectsList) {

@@ -42,11 +42,11 @@ public class StorageSerializer {
 
 	public static function serializeFlows(project:Project, source:Object):void {
 		project.flows = Vector.<ProjectFlow>(source.flows.map(function (item:*, index:int, array:*):ProjectFlow {
-			return new ProjectFlow(item.name, item.entries.join("|"));
+			return new ProjectFlow(item.name, item.entries.join("|"), item.aggregate);
 		}));
 		if (source.scenarios) {
 			project.scenarios = Vector.<ProjectScenario>(source.scenarios.map(function (item:*, index:int, array:*):ProjectScenario {
-				var res:ProjectScenario = new ProjectScenario(item.name, item.entries.join("|"), ConstraintsParser.parseList(item.source));
+				var res:ProjectScenario = new ProjectScenario(item.name, item.entries.join("|"), item.aggregate, ConstraintsParser.parseList(item.source));
 				res.source = item.source;
 				return res;
 			}))
@@ -64,11 +64,13 @@ public class StorageSerializer {
 	}
 
 	public static function serializeEntryCollection(collection:Object, claz:Class):* {
-		return collection.map(function (item:Object, index:int, array:*):* {
-			return (claz == DataEntry)
-				? new claz(item.id, item.name, item.description, item.dataInterpretation)
-				: new claz(item.id, item.name, item.description);
-		})
+		if (collection)
+			return collection.map(function (item:Object, index:int, array:*):* {
+				return (claz == DataEntry)
+					? new claz(item.id, item.name, item.description, item.dataInterpretation)
+					: new claz(item.id, item.name, item.description);
+			});
+		return [];
 	}
 
 	public static function serializeVisits(visits:Vector.<Object>, project:Project):Vector.<Visit> {

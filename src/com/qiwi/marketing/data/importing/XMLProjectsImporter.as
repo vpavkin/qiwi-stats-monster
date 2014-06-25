@@ -93,7 +93,7 @@ public class XMLProjectsImporter {
 		var result:Array = [];
 		var list:XMLList = xml.flows.flow;
 		for each (var item:XML in list) {
-			result.push(new ProjectFlow(item.@name, item.@entries));
+			result.push(new ProjectFlow(item.@name, item.@entries, item.@aggregate == "true"));
 		}
 		return result;
 	}
@@ -102,7 +102,7 @@ public class XMLProjectsImporter {
 		var result:Array = [];
 		var list:XMLList = xml.scenarios.scenario;
 		for each (var item:XML in list) {
-			var scenario:ProjectScenario = new ProjectScenario(item.@name, item.@entries, ConstraintsParser.parseList(item));
+			var scenario:ProjectScenario = new ProjectScenario(item.@name, item.@entries, item.@aggregate == "true", ConstraintsParser.parseList(item));
 			scenario.source = item;
 			result.push(scenario);
 		}

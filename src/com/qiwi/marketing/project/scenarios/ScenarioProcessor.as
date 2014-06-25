@@ -59,14 +59,17 @@ public class ScenarioProcessor {
 		var stepsCount:uint = path.steps.length;
 		for (var flowIndex:int = 0; flowIndex < flowData.length; flowIndex++) {
 			var entry:FlowEntryData = flowData[flowIndex];
+			var found:Boolean = false;
 			for (var stepIndex:int = 0; stepIndex < stepsCount; stepIndex++) {
 				if (path.steps[stepIndex].entry == entry.entry && (!entry.data || entry.data == path.steps[stepIndex].data)) {
 					entry.enters++;
-					if (payed)
-						entry.payments++;
-					break;
+					found = true;
+					if (!flow.aggregate)
+						break;
 				}
 			}
+			if (found && payed)
+				entry.payments++;
 		}
 	}
 
