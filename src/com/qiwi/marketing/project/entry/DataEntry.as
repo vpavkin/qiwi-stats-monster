@@ -14,7 +14,7 @@ public class DataEntry extends EntryBase implements IProjectEntry {
 	}
 
 	public function getInterpretation(val:String):String {
-		return dataInterpretation[val] || dataInterpretation.default;
+		return dataInterpretation[val] || (dataInterpretation.default || val);
 	}
 }
 }

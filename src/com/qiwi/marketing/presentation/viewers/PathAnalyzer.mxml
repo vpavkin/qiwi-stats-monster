@@ -1,0 +1,82 @@
+<?xml version="1.0"?>
+<!--
+  Created by v.pavkin on 18.04.2014.
+-->
+<presentation:PageBase xmlns:s="library://ns.adobe.com/flex/spark"
+					   xmlns:fx="http://ns.adobe.com/mxml/2009"
+					   xmlns:presentation="com.qiwi.marketing.presentation.*">
+
+	<fx:Script><![CDATA[
+		import com.qiwi.marketing.project.data.DataAnalyzer;
+		import com.qiwi.marketing.project.data.DataEntryAnalysisResult;
+		import com.qiwi.marketing.project.entry.DataEntry;
+		import com.qiwi.marketing.project.entry.IProjectEntry;
+		import com.qiwi.marketing.project.visit.path.Path;
+		import com.qiwi.marketing.project.visit.path.PathStep;
+		import com.qiwi.marketing.utils.VectorUtils;
+
+		import mx.collections.ArrayCollection;
+		import mx.controls.Alert;
+
+		[Bindable]
+		protected var _pathAnalysisResult:ArrayCollection;
+
+		override protected function onShow(e:Event = null):void {
+			super.onShow(e);
+			reset()
+		}
+		private function reset():void {
+			resultsGrid.dataProvider = null;
+			pathTextArea.text = "";
+		}
+
+		private function onPathTextChange():void {
+			checkChange();
+		}
+
+		protected function checkChange():void {
+			if (!pathTextArea.text)
+				return;
+
+			try {
+				var path:Path = new Path(pathTextArea.text, _project);
+				_pathAnalysisResult = new ArrayCollection();
+				for each(var step:PathStep in path.steps) {
+					var e:IProjectEntry = _project.resolveEntry(step.entry);
+					_pathAnalysisResult.addItem({
+						entry      : step.entry + step.data,
+						description: e.description + ((e is DataEntry) ? ": " + DataEntry(e).getInterpretation(step.data) : ""),
+						time       : step.time
+					})
+				}
+			} catch (e:Error) {
+				Alert.show("Не удалось распарсить строку.", "Ошибка!");
+			}
+			resultsGrid.dataProvider = _pathAnalysisResult;
+		}
+
+		override protected function get displayName():String {
+			return "Path Analyzer";
+		}
+		]]></fx:Script>
+
+	<s:VGroup height="100%" width="100%">
+		<s:Label text="Вставьте инфотранзакцию:"/>
+		<s:TextArea id="pathTextArea" width="100%" change="onPathTextChange()"/>
+		<s:Label text="Результаты:"/>
+		<s:Group height="100%"
+				 width="100%">
+			<s:DataGrid id="resultsGrid" height="100%" width="100%" dataProvider="{_pathAnalysisResult}" selectionMode="multipleRows">
+				<s:columns>
+					<s:ArrayList>
+						<s:GridColumn dataField="entry" headerText="Код" width="40" sortable="true"/>
+						<s:GridColumn dataField="description" headerText="Описание" sortable="true"/>
+						<s:GridColumn dataField="time" headerText="Время" sortable="true"/>
+					</s:ArrayList>
+				</s:columns>
+			</s:DataGrid>
+		</s:Group>
+		<s:Button label="Назад на «{_project.displayName}»" click="goToProjectInfo()"/>
+	</s:VGroup>
+
+</presentation:PageBase>

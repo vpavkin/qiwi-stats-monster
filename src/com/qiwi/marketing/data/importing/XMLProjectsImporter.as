@@ -152,12 +152,16 @@ public class XMLProjectsImporter {
 			case TAGS.DATA:
 				var interpretation:Object = {};
 				var intStr:String = item.@interpretation;
+				var hasInterpretation:Boolean = false;
 				intStr.split("|").forEach(function (item:String, index:int, array:Array):* {
 					var kv:Array = item.split(":");
-					if (kv[0] && kv[1])
+					if (kv[0] && kv[1]) {
 						interpretation[kv[0]] = kv[1];
+						hasInterpretation = true;
+					}
 				});
-				interpretation.default = item.@defaultInterpretation;
+				if (hasInterpretation)
+					interpretation.default = item.@defaultInterpretation.toString();
 				entry = new DataEntry(item.@id, item.@name, item.toString(), interpretation);
 				break;
 			case TAGS.OTHER:

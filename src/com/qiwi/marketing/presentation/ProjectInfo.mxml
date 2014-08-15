@@ -61,6 +61,11 @@
 			dispatchEvent(new Event(ContentViewStack.DATA_ANALYZER, true));
 		}
 
+		private function onShowPathAnalyzerClick():void {
+			dispatchEvent(new Event(ContentViewStack.PATH_ANALYZER, true));
+		}
+
+
 		override protected function get displayName():String {
 			return "Проект";
 		}
@@ -109,6 +114,7 @@
 			<s:Button id="showFlowViewer" click="onShowFlowViewerClick()" label="Flow Viewer" height="50"/>
 			<s:Button id="showScenarioViewer" click="onShowScenarioViewerClick()" label="Scenario Viewer" height="50"/>
 			<s:Button id="showDataAnalysis" click="onShowDataAnalysisClick()" label="Data Analyzer" height="50"/>
+			<s:Button id="showPathAnalyzer" click="onShowPathAnalyzerClick()" label="Path Analyzer" height="50"/>
 			<s:Button id="exportDate" enabled="{overview.selectionLength > 0}" click="onExportClick()"
 					  label="Экспорт в CSV" height="50"/>
 		</s:VGroup>

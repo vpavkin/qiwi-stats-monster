@@ -50,7 +50,7 @@
 		}
 
 		protected function updateDataEntries():void {
-			_dataEntries = VectorUtils.toArrayCollection(_project.dataEntries)
+			_dataEntries = VectorUtils.toArrayCollection(_project.dataEntries.concat(_project.fields));
 		}
 
 		private function updateVersions():void {
@@ -113,7 +113,7 @@
 		<s:Label text="Результаты:"/>
 		<s:Group height="100%"
 				 width="100%">
-			<s:DataGrid id="resultsGrid" height="100%" width="100%" dataProvider="{_dataAnalysisResult}">
+			<s:DataGrid id="resultsGrid" height="100%" width="100%" dataProvider="{_dataAnalysisResult}" selectionMode="multipleRows">
 				<s:columns>
 					<s:ArrayList>
 						<s:GridColumn dataField="value" headerText="Значение" sortable="true"/>
