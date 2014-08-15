@@ -7,13 +7,10 @@
 					   xmlns:presentation="com.qiwi.marketing.presentation.*">
 
 	<fx:Script><![CDATA[
-		import com.qiwi.marketing.project.data.DataAnalyzer;
-		import com.qiwi.marketing.project.data.DataEntryAnalysisResult;
 		import com.qiwi.marketing.project.entry.DataEntry;
 		import com.qiwi.marketing.project.entry.IProjectEntry;
 		import com.qiwi.marketing.project.visit.path.Path;
 		import com.qiwi.marketing.project.visit.path.PathStep;
-		import com.qiwi.marketing.utils.VectorUtils;
 
 		import mx.collections.ArrayCollection;
 		import mx.controls.Alert;
@@ -44,9 +41,10 @@
 				for each(var step:PathStep in path.steps) {
 					var e:IProjectEntry = _project.resolveEntry(step.entry);
 					_pathAnalysisResult.addItem({
-						entry      : step.entry + step.data,
-						description: e.description + ((e is DataEntry) ? ": " + DataEntry(e).getInterpretation(step.data) : ""),
-						time       : step.time
+						entryClassed: e,
+						entry       : step.entry + step.data,
+						description : e.description + ((e is DataEntry) ? ": " + DataEntry(e).getInterpretation(step.data) : ""),
+						time        : step.time
 					})
 				}
 			} catch (e:Error) {
@@ -66,7 +64,9 @@
 		<s:Label text="Результаты:"/>
 		<s:Group height="100%"
 				 width="100%">
-			<s:DataGrid id="resultsGrid" height="100%" width="100%" dataProvider="{_pathAnalysisResult}" selectionMode="multipleRows">
+			<s:DataGrid id="resultsGrid" itemRenderer="com.qiwi.marketing.presentation.viewers.renderers.ColoredGridItemRenderer"
+						height="100%" width="100%"
+						dataProvider="{_pathAnalysisResult}" selectionMode="multipleRows">
 				<s:columns>
 					<s:ArrayList>
 						<s:GridColumn dataField="entry" headerText="Код" width="40" sortable="true"/>
