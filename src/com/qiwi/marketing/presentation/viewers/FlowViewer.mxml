@@ -116,7 +116,7 @@
 
 		private function tipFunction(hd:HitData):String {
 			var series:ColumnSeries = ColumnSeries(hd.element);
-			return hd.item.entryName + "\n" + series.displayName + ":\n" + hd.item[series.yField];
+			return hd.item.entryName + "\n" + series.displayName + ":\n" + (hd.item[series.yField].toPrecision(3));
 		}
 		private function entersLabelFunc(element:ChartItem, series:Series):String {
 			return  element.item.enters + "\n" + ((element.item.enters / totalEnters ) * 100).toPrecision(3) + "%";
@@ -124,8 +124,26 @@
 		private function paymentsLabelFunc(element:ChartItem, series:Series):String {
 			return element.item.payments + "\n" + ((element.item.payments / totalEnters) * 100).toPrecision(3) + "%";
 		}
+		private function averageTimeLabelFunc(element:ChartItem, series:Series):String {
+			return element.item.averageTime.toPrecision(3) + " сек.";
+		}
+		private function longestTimeLabelFunc(element:ChartItem, series:Series):String {
+			return element.item.longestTime.toPrecision(3) + " сек.";
+		}
+		private function shortestTimeLabelFunc(element:ChartItem, series:Series):String {
+			return element.item.shortestTime.toPrecision(3) + " сек.";
+		}
+
 		private function onChartItemClick(event:ChartItemEvent):void {
 			System.setClipboard(event.hitData.item.toClipboardText(totalEnters));
+		}
+
+		private function onShowTimeChange(event:Event):void {
+			if (timeCheckBox.selected) {
+				viewer.series = [enterSeries, paymentSeries, averageTimeSeries];
+			} else {
+				viewer.series = [enterSeries, paymentSeries];
+			}
 		}
 		]]></fx:Script>
 
@@ -141,6 +159,7 @@
 			<s:ComboBox id="versionComboBox" dataProvider="{_versions}" labelField="value"
 						requireSelection="true"
 						change="onSelectedVersionChanged()"/>
+			<s:CheckBox id="timeCheckBox" selected="true" label="Показывать время" change="onShowTimeChange(event)"/>
 		</s:HGroup>
 		<s:Label text="Результаты:"/>
 		<s:Group id="myGroup"
@@ -170,17 +189,22 @@
 					</mx:AxisRenderer>
 				</mx:horizontalAxisRenderers>
 				<mx:verticalAxisRenderers>
-					<mx:AxisRenderer axis="{verAxis}">
+					<mx:AxisRenderer placement="left" axis="{verAxis}">
+						<mx:axisStroke>{axisStroke}</mx:axisStroke>
+					</mx:AxisRenderer>
+					<mx:AxisRenderer placement="right" axis="{timeAxis}">
 						<mx:axisStroke>{axisStroke}</mx:axisStroke>
 					</mx:AxisRenderer>
 				</mx:verticalAxisRenderers>
 				<mx:series>
 					<mx:ColumnSeries
+						id="enterSeries"
 						labelPosition="outside"
 						xField="entryLabel"
 						labelFunction="entersLabelFunc"
 						yField="enters"
 						displayName="Дошли"
+						verticalAxis="{verAxis}"
 						>
 						<mx:fill>
 							<mx:SolidColor color="0x2266bb"/>
@@ -190,11 +214,13 @@
 						</mx:stroke>
 					</mx:ColumnSeries>
 					<mx:ColumnSeries
+						id="paymentSeries"
 						labelPosition="outside"
 						xField="entryLabel"
 						labelFunction="paymentsLabelFunc"
 						yField="payments"
 						displayName="Оплатили"
+						verticalAxis="{verAxis}"
 						>
 						<mx:fill>
 							<mx:SolidColor color="#ff8100"/>
@@ -203,6 +229,55 @@
 							<mx:SolidColorStroke color="#000000"/>
 						</mx:stroke>
 					</mx:ColumnSeries>
+					<!--<mx:ColumnSeries-->
+					<!--labelPosition="outside"-->
+					<!--xField="entryLabel"-->
+					<!--yField="shortestTime"-->
+					<!--labelFunction="longestTimeLabelFunc"-->
+					<!--displayName="Кратчайшее время"-->
+					<!--verticalAxis="{timeAxis}"-->
+					<!-->-->
+					<!--<mx:fill>-->
+					<!--<mx:SolidColor color="0x5dbb38"/>-->
+					<!--</mx:fill>-->
+					<!--<mx:stroke>-->
+					<!--<mx:SolidColorStroke color="#000000"/>-->
+					<!--</mx:stroke>-->
+					<!--</mx:ColumnSeries>-->
+
+					<mx:ColumnSeries
+						id="averageTimeSeries"
+						labelPosition="outside"
+						xField="entryLabel"
+						yField="averageTime"
+						labelFunction="averageTimeLabelFunc"
+						displayName="Среднее время"
+						>
+						<mx:fill>
+							<mx:SolidColor color="0x4a8e28"/>
+						</mx:fill>
+						<mx:stroke>
+							<mx:SolidColorStroke color="#000000"/>
+						</mx:stroke>
+						<mx:verticalAxis>
+							<mx:LinearAxis id="timeAxis"/>
+						</mx:verticalAxis>
+					</mx:ColumnSeries>
+					<!--<mx:ColumnSeries-->
+					<!--labelPosition="outside"-->
+					<!--xField="entryLabel"-->
+					<!--yField="longestTime"-->
+					<!--labelFunction="longestTimeLabelFunc"-->
+					<!--displayName="Длиннейшее время"-->
+					<!--verticalAxis="{timeAxis}"-->
+					<!-->-->
+					<!--<mx:fill>-->
+					<!--<mx:SolidColor color="0xee453e"/>-->
+					<!--</mx:fill>-->
+					<!--<mx:stroke>-->
+					<!--<mx:SolidColorStroke color="#000000"/>-->
+					<!--</mx:stroke>-->
+					<!--</mx:ColumnSeries>-->
 				</mx:series>
 			</mx:ColumnChart>
 			<mx:Legend right="30" top="30" dataProvider="{viewer}" fontSize="24"/>

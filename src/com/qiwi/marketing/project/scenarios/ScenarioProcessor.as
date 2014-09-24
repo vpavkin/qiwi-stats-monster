@@ -7,10 +7,12 @@ import com.qiwi.marketing.data.storage.VisitsStorageManager;
 import com.qiwi.marketing.project.Project;
 import com.qiwi.marketing.project.ProjectVersion;
 import com.qiwi.marketing.project.entry.DataEntry;
+import com.qiwi.marketing.project.entry.EntryHelper;
 import com.qiwi.marketing.project.entry.IProjectEntry;
 import com.qiwi.marketing.project.visit.DayOfVisits;
 import com.qiwi.marketing.project.visit.Visit;
 import com.qiwi.marketing.project.visit.path.Path;
+import com.qiwi.marketing.project.visit.path.PathStep;
 
 public class ScenarioProcessor {
 
@@ -27,6 +29,9 @@ public class ScenarioProcessor {
 		var result:Vector.<FlowEntryData> = prepareFlowData(flow, project);
 		var totalEnters:uint = 0,
 			totalPayments:uint = 0,
+			totalAverageTime:uint = 0,
+			totalLongestTime:uint = 0,
+			totalShortestTime:uint = int.MAX_VALUE,
 			payed:Boolean,
 			visitsCount:uint = day.visits.length;
 
@@ -34,12 +39,19 @@ public class ScenarioProcessor {
 			if (version != ProjectVersion.ALL_VERSIONS && (day.visits[i].version != version ))
 				continue;
 			totalEnters++;
+			var t:uint = day.visits[i].totalTime;
+			totalAverageTime += t;
+			totalLongestTime = totalLongestTime > t ? totalLongestTime : t;
+			totalShortestTime = totalShortestTime < t ? totalShortestTime : t;
 			if (payed = day.visits[i].visitorPayed())
 				totalPayments++;
 			collector(flow, result, day.visits[i], payed);
 		}
+		result.forEach(function (item:FlowEntryData, index:int, a:*):* {
+			item.averageTime = item.averageTime/item.timeCount;
+		});
 		result.unshift(
-			new FlowEntryData("", "Всего", "Всего входов", "", totalEnters, totalPayments)
+			new FlowEntryData("", "Всего", "Всего входов", "", totalAverageTime / totalEnters, totalShortestTime, totalLongestTime, totalEnters, totalPayments)
 		);
 		return result;
 	}
@@ -62,12 +74,31 @@ public class ScenarioProcessor {
 			var found:Boolean = false;
 			for (var stepIndex:int = 0; stepIndex < stepsCount; stepIndex++) {
 				if (path.steps[stepIndex].entry == entry.entry && (!entry.data || entry.data == path.steps[stepIndex].data)) {
-					entry.enters++;
-					found = true;
-					if (!flow.aggregate)
-						break;
+					if (!flow.aggregate && !found) {
+						entry.enters++;
+						found = true;
+					}
+					var nextPage:PathStep = null, nextStepIndex:int = stepIndex + 1;
+					do {
+						if (nextStepIndex >= path.steps.length)
+							break;
+						var p:PathStep = path.steps[nextStepIndex];
+						if (EntryHelper.isPage(p.entry) || EntryHelper.isExit(p.entry)) {
+							nextPage = p;
+						}
+						nextStepIndex++;
+					} while (!nextPage && nextStepIndex <= path.steps.length - 1);
+
+					if (nextPage) {
+						var t:int = nextPage.time - path.steps[stepIndex].time;
+						entry.averageTime += t;
+						entry.timeCount++;
+						entry.longestTime = entry.longestTime > t ? entry.longestTime : t;
+						entry.shortestTime = entry.shortestTime < t ? entry.shortestTime : t;
+					}
 				}
 			}
+
 			if (found && payed)
 				entry.payments++;
 		}

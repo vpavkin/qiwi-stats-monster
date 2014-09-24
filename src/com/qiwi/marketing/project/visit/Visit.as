@@ -58,6 +58,10 @@ public class Visit {
 		return false
 	}
 
+	public function get totalTime():uint {
+		return this.path.steps[this.path.steps.length - 1].time;
+	}
+
 	/**
 	 *
 	 * @param str date in string format like 2014-04-06 00:00:29

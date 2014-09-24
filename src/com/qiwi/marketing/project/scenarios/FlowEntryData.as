@@ -12,13 +12,22 @@ public class FlowEntryData {
 	public var enters:uint;
 	public var payments:int;
 
-	public function FlowEntryData(entry:String, entryLabel:String, entryName:String, data:String, enters:uint = 0, payments:uint = 0) {
+	public var averageTime:Number;
+	public var longestTime:int;
+	public var shortestTime:int;
+	public var timeCount:int = 0;
+
+	public function FlowEntryData(entry:String, entryLabel:String, entryName:String, data:String, averageTime:Number = 0, shortestTime:int = int.MAX_VALUE, longestTime:int = 0, enters:uint = 0, payments:uint = 0) {
 		this.entry = entry;
 		this.entryLabel = entryLabel;
 		this.entryName = entryName;
 		this.data = data;
 		this.enters = enters;
 		this.payments = payments;
+
+		this.averageTime = averageTime;
+		this.longestTime = longestTime;
+		this.shortestTime = shortestTime;
 	}
 
 	public function toCSVString(totalEnters:uint = -1):String {
@@ -39,7 +48,9 @@ public class FlowEntryData {
 		return [
 			entryName.replace(/\n/g, " "),
 				"Вошли:" + enters + " (" + ((totalEnters == -1) ? "" : (((enters / totalEnters) * 100).toPrecision(3) + "%")) + ")" ,
-				"Оплатили:" + payments + " (" + ((totalEnters == -1) ? "" : (((payments / totalEnters) * 100).toPrecision(3) + "%")) + ")"].join("\n");
+				"Оплатили:" + payments + " (" + ((totalEnters == -1) ? "" : (((payments / totalEnters) * 100).toPrecision(3) + "%")) + ")",
+				"Среднее время:" + averageTime.toFixed(1) + " сек."].join("\n");
+
 	}
 }
 }
