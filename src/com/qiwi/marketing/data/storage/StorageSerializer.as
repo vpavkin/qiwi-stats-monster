@@ -67,8 +67,8 @@ public class StorageSerializer {
 		if (collection)
 			return collection.map(function (item:Object, index:int, array:*):* {
 				return (claz == DataEntry)
-					? new claz(item.id, item.name, item.description, item.dataInterpretation)
-					: new claz(item.id, item.name, item.description);
+					? new claz(item.id, item.name, item.description, item.alias, item.dataInterpretation)
+					: new claz(item.id, item.name, item.description, item.alias);
 			});
 		return [];
 	}

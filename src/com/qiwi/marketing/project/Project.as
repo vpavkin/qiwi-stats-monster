@@ -91,57 +91,57 @@ public class Project {
 		var len:uint = pages.length;
 		for (var i:int = 0; i < len; i++) {
 			var entry:PageEntry = pages[i];
-			if (entry.id == str)
+			if (entry.id == str || entry.alias == str)
 				return entry;
 		}
-		return new PageEntry(str, "Unknown", "Unknown");
+		return new PageEntry(str, "Unknown", "Unknown", null);
 	}
 
 	public function resolveDataEntry(str:String):IProjectEntry {
 		var len:uint = dataEntries.length;
 		for (var i:int = 0; i < len; i++) {
 			var entry:DataEntry = dataEntries[i];
-			if (entry.id == str)
+			if (entry.id == str || entry.alias == str)
 				return entry;
 		}
-		return new DataEntry(str, "Unknown", "Unknown", {});
+		return new DataEntry(str, "Unknown", "Unknown", null, {});
 
 	}
 	public function resolveError(str:String):IProjectEntry {
 		var len:uint = errors.length;
 		for (var i:int = 0; i < len; i++) {
 			var entry:ErrorEntry = errors[i];
-			if (entry.id == str)
+			if (entry.id == str || entry.alias == str)
 				return entry;
 		}
-		return new ErrorEntry(str, "Unknown", "Unknown");
+		return new ErrorEntry(str, "Unknown", "Unknown", null);
 	}
 	public function resolveService(str:String):IProjectEntry {
 		var len:uint = services.length;
 		for (var i:int = 0; i < len; i++) {
 			var entry:ServiceEntry = services[i];
-			if (entry.id == str)
+			if (entry.id == str || entry.alias == str)
 				return entry;
 		}
-		return new ServiceEntry(str, "Unknown", "Unknown");
+		return new ServiceEntry(str, "Unknown", "Unknown", null);
 	}
 	public function resolveExit(str:String):IProjectEntry {
 		var len:uint = exits.length;
 		for (var i:int = 0; i < len; i++) {
 			var entry:ExitEntry = exits[i];
-			if (entry.id == str)
+			if (entry.id == str || entry.alias == str)
 				return entry;
 		}
-		return new ExitEntry(str, "Unknown", "Unknown");
+		return new ExitEntry(str, "Unknown", "Unknown", null);
 	}
 	public function resolveCustomEntry(str:String):IProjectEntry {
 		var len:uint = otherEntries.length;
 		for (var i:int = 0; i < len; i++) {
 			var entry:CustomEntry = otherEntries[i];
-			if (entry.id == str)
+			if (entry.id == str || entry.alias == str)
 				return entry;
 		}
-		return new CustomEntry(str, "Unknown", "Unknown");
+		return new CustomEntry(str, "Unknown", "Unknown", null);
 	}
 
 	public function resolveField(key:String):ProjectField {
@@ -161,11 +161,11 @@ public class Project {
 			var len:uint = item.length;
 			for (var j:int = 0; j < len; j++) {
 				var entry:IProjectEntry = item[j];
-				if (entry.id == str)
+				if (entry.id == str || entry.alias == str)
 					return entry;
 			}
 		}
-		return new CustomEntry(str, "Unknown", "Unknown");
+		return new CustomEntry(str, "Unknown", "Unknown", null);
 	}
 }
 }

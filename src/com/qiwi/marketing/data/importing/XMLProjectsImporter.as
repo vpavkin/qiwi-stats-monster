@@ -134,19 +134,19 @@ public class XMLProjectsImporter {
 		var entry:IProjectEntry;
 		switch (tagName) {
 			case TAGS.PAGE:
-				entry = new PageEntry(item.@id, item.@name, item.toString());
+				entry = new PageEntry(item.@id, item.@name, item.toString(), item.@alias);
 				break;
 			case TAGS.ERROR:
-				entry = new ErrorEntry(item.@id, item.@name, item.toString());
+				entry = new ErrorEntry(item.@id, item.@name, item.toString(), item.@alias);
 				break;
 			case TAGS.EXIT:
-				entry = new ExitEntry(item.@id, item.@name, item.toString());
+				entry = new ExitEntry(item.@id, item.@name, item.toString(), item.@alias);
 				break;
 			case TAGS.SERVICE:
-				entry = new ServiceEntry(item.@id, item.@name, item.toString());
+				entry = new ServiceEntry(item.@id, item.@name, item.toString(), item.@alias);
 				break;
 			case TAGS.ACTION:
-				entry = new ActionEntry(item.@id, item.@name, item.toString());
+				entry = new ActionEntry(item.@id, item.@name, item.toString(), item.@alias);
 				break;
 			case TAGS.DATA:
 				var interpretation:Object = {};
@@ -161,10 +161,10 @@ public class XMLProjectsImporter {
 				});
 				if (hasInterpretation)
 					interpretation.default = item.@defaultInterpretation.toString();
-				entry = new DataEntry(item.@id, item.@name, item.toString(), interpretation);
+				entry = new DataEntry(item.@id, item.@name, item.toString(), item.@alias, interpretation);
 				break;
 			case TAGS.OTHER:
-				entry = new CustomEntry(item.@id, item.@name, item.toString());
+				entry = new CustomEntry(item.@id, item.@name, item.toString(), item.@alias);
 				break;
 		}
 		return entry;

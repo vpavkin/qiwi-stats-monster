@@ -48,7 +48,7 @@ public class ScenarioProcessor {
 			collector(flow, result, day.visits[i], payed);
 		}
 		result.forEach(function (item:FlowEntryData, index:int, a:*):* {
-			item.averageTime = item.averageTime/item.timeCount;
+			item.averageTime = item.averageTime / item.timeCount;
 		});
 		result.unshift(
 			new FlowEntryData("", "Всего", "Всего входов", "", totalAverageTime / totalEnters, totalShortestTime, totalLongestTime, totalEnters, totalPayments)
@@ -122,6 +122,8 @@ public class ScenarioProcessor {
 					data = arr[1];
 				}
 				var e:IProjectEntry = project.resolveEntry(entry);
+				if (entry == e.alias)
+					entry = e.id;
 				entryName = e.name + (((e is DataEntry) && data) ? ":\n" + DataEntry(e).getInterpretation(data) : "");
 				result.push(new FlowEntryData(entry, item, entryName, data));
 			}

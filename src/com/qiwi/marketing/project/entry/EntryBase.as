@@ -9,11 +9,13 @@ public class EntryBase {
 	private var _name:String;
 	private var _description:String;
 	private var _id:String;
+	private var _alias:String;
 
-	public function EntryBase(id:String, name:String, description:String) {
+	public function EntryBase(id:String, name:String, description:String, alias:String) {
 		_name = name;
 		_description = description;
 		_id = id;
+		_alias = alias;
 	}
 
 	public function get name():String {
@@ -33,6 +35,12 @@ public class EntryBase {
 	}
 	public function set id(value:String):void {
 		_id = value;
+	}
+	public function get alias():String {
+		return _alias;
+	}
+	public function set alias(value:String):void {
+		_alias = value;
 	}
 }
 }

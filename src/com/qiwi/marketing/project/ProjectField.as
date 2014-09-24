@@ -8,7 +8,7 @@ import com.qiwi.marketing.project.entry.DataEntry;
 public class ProjectField extends DataEntry {
 
 	public function ProjectField(key:String, displayName:String) {
-		super(key, displayName, displayName, {});
+		super(key, displayName, displayName, null, {});
 		this.displayName = displayName ? displayName : key;
 		this.key = key;
 	}
