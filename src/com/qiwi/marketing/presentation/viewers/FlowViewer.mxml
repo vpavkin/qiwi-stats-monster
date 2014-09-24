@@ -19,6 +19,7 @@
 		import mx.charts.ChartItem;
 		import mx.charts.HitData;
 		import mx.charts.chartClasses.Series;
+		import mx.charts.events.ChartItemEvent;
 		import mx.collections.ArrayCollection;
 
 		protected var _selectedDate:Object;
@@ -103,15 +104,22 @@
 			return "Flow Viewer";
 		}
 
+		public function get totalEnters():int {
+			return viewer.dataProvider.getItemAt(0).enters;
+		}
+
 		private function tipFunction(hd:HitData):String {
 			var series:ColumnSeries = ColumnSeries(hd.element);
 			return hd.item.entryName + "\n" + series.displayName + ":\n" + hd.item[series.yField];
 		}
 		private function entersLabelFunc(element:ChartItem, series:Series):String {
-			return  element.item.enters + "\n" + ((element.item.enters / viewer.dataProvider.getItemAt(0).enters) * 100).toPrecision(3) + "%";
+			return  element.item.enters + "\n" + ((element.item.enters / totalEnters ) * 100).toPrecision(3) + "%";
 		}
 		private function paymentsLabelFunc(element:ChartItem, series:Series):String {
-			return element.item.payments + "\n" + ((element.item.payments / viewer.dataProvider.getItemAt(0).enters) * 100).toPrecision(3) + "%";
+			return element.item.payments + "\n" + ((element.item.payments / totalEnters) * 100).toPrecision(3) + "%";
+		}
+		private function onChartItemClick(event:ChartItemEvent):void {
+			System.setClipboard(event.hitData.item.toClipboardText(totalEnters));
 		}
 		]]></fx:Script>
 
@@ -138,6 +146,7 @@
 							dataTipFunction="tipFunction"
 							dataProvider="{_dataProvider}"
 							styleName="customClass"
+							itemClick="onChartItemClick(event)"
 				>
 				<mx:horizontalAxis>
 					<mx:CategoryAxis id="horAxis" categoryField="entryLabel"/>

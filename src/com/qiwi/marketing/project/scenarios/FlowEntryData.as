@@ -34,5 +34,12 @@ public class FlowEntryData {
 	public static function CSVHeader():String {
 		return ["Код", "Описание", "Входов", "% дошедших", "Платежей", "% оплативших"].join("\t");
 	}
+
+	public function toClipboardText(totalEnters:uint = -1):String {
+		return [
+			entryName.replace(/\n/g, " "),
+				"Вошли:" + enters + " (" + ((totalEnters == -1) ? "" : (((enters / totalEnters) * 100).toPrecision(3) + "%")) + ")" ,
+				"Оплатили:" + payments + " (" + ((totalEnters == -1) ? "" : (((payments / totalEnters) * 100).toPrecision(3) + "%")) + ")"].join("\n");
+	}
 }
 }
