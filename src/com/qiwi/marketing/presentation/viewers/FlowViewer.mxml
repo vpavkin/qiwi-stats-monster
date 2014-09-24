@@ -4,7 +4,8 @@
 -->
 <presentation:PageBase xmlns:s="library://ns.adobe.com/flex/spark"
 					   xmlns:fx="http://ns.adobe.com/mxml/2009"
-					   xmlns:presentation="com.qiwi.marketing.presentation.*" xmlns:mx="library://ns.adobe.com/flex/mx">
+					   xmlns:presentation="com.qiwi.marketing.presentation.*"
+					   xmlns:mx="library://ns.adobe.com/flex/mx">
 	<fx:Declarations>
 		<mx:SolidColorStroke id="axisStroke" color="#2266bb"
 							 weight="8" caps="square"/>
@@ -92,6 +93,11 @@
 
 			var flow:Vector.<FlowEntryData> = getData();
 			_dataProvider = VectorUtils.toArrayCollection(flow);
+			if (_dataProvider.length < 8) {
+				viewer.percentWidth = 100;
+			} else {
+				viewer.width = _dataProvider.length * 200;
+			}
 			updateVersions()
 		}
 
@@ -137,11 +143,14 @@
 						change="onSelectedVersionChanged()"/>
 		</s:HGroup>
 		<s:Label text="Результаты:"/>
-		<s:Group height="100%"
-				 width="100%">
+		<s:Group id="myGroup"
+				 height="100%"
+				 width="100%"
+				 clipAndEnableScrolling="true"
+				 horizontalScrollPosition="0">
 			<mx:ColumnChart id="viewer"
 							height="100%"
-							width="100%"
+							width="2000"
 							showDataTips="true"
 							dataTipFunction="tipFunction"
 							dataProvider="{_dataProvider}"
@@ -198,6 +207,7 @@
 			</mx:ColumnChart>
 			<mx:Legend right="30" top="30" dataProvider="{viewer}" fontSize="24"/>
 		</s:Group>
+		<s:HScrollBar viewport="{myGroup}" width="100%"/>
 		<s:Button label="Назад на «{_project.displayName}»" click="goToProjectInfo()"/>
 	</s:VGroup>
 </presentation:PageBase>
