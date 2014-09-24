@@ -66,10 +66,9 @@ public class XMLProjectsImporter {
 	private static function onAlertClosed(event:CloseEvent):void {
 		if (event.detail == Alert.YES && _pendingUpdate) {
 			var old:Project = LocalStorage.instance.resolveProject(_pendingUpdate.number);
-			var v:Object = old.visits;
 			LocalStorage.instance.removeProject(old);
 			LocalStorage.instance.addProject(_pendingUpdate);
-			_pendingUpdate.visits = v;
+			VisitsStorageManager.instance.loadProjectVisitsHeaders(_pendingUpdate)
 		}
 		_pendingUpdate = null
 	}
